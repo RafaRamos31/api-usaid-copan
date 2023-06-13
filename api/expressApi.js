@@ -1,8 +1,9 @@
 import { getDepartamentos } from "./src/controllers/departamentos-controller.js";
-import { getNoticias } from "./src/controllers/noticias-controller.js";
+import { addNoticia, getNoticias } from "./src/controllers/noticias-controller.js";
+import multer from "multer";
 
 export function addRestDirections(app) {
-
+  const upload = new multer();
   //GET noticias
   app.get("/api/noticias", async (request, response) => {
     try {
@@ -15,8 +16,14 @@ export function addRestDirections(app) {
   });
 
   //POST noticias
-  app.post("/api/noticias", (request, response) => {
-    response.json(request);
+  app.post("/api/noticias", upload.any(), async (request, response) => {
+    const noticia = await addNoticia({
+      deptoId: request.body.departamento, 
+      contenido: request.body.contenido,
+      nombreArchivo: request.files[0]?.originalname
+    });
+
+    response.status(200).json({noticia});
   });
 
   //GET departamentos
