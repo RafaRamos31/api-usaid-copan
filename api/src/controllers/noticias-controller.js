@@ -2,7 +2,7 @@ import Noticia from "../models/noticia.js";
 import { getDepartamentoById } from "./departamentos-controller.js";
 
 export async function getNoticias(){
-  return Noticia.find().populate("departamento");
+  return Noticia.find().sort({ _id: -1 }).limit(5).populate("departamento");
 }
 
 export async function addNoticia({deptoId, contenido, nombreArchivo, enlace}){
