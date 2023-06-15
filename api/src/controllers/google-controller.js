@@ -2,7 +2,7 @@ import { google } from "googleapis";
 import stream from "stream";
 import path from "path";
 
-const KEYFILEPATH = path.join("credentials.json");
+const KEYFILEPATH = path.join(__dirname ,"../../../credentials.json");
 const SCOPES = ["https://www.googleapis.com/auth/drive"];
 
 const auth = new google.auth.GoogleAuth({
