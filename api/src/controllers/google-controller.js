@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const KEYFILENAME = path.join(__dirname, '../../../credenciales.json');
+const KEYFILENAME = path.join(__dirname, '../../../credentials.json');
 const SCOPES = ["https://www.googleapis.com/auth/drive"];
 
 const auth = new google.auth.GoogleAuth({
