@@ -1,12 +1,16 @@
 import { google } from "googleapis";
 import stream from "stream";
 import path from "path";
+import { fileURLToPath } from 'url';
 
-const KEYFILEPATH = path.join(__dirname ,"../../../credentials.json");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const KEYFILENAME = path.join(__dirname, '../../../clave-de-servicio.json');
 const SCOPES = ["https://www.googleapis.com/auth/drive"];
 
 const auth = new google.auth.GoogleAuth({
-  keyFile: KEYFILEPATH,
+  keyFilename: KEYFILENAME,
   scopes: SCOPES,
 });
 
