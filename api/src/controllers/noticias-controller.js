@@ -5,7 +5,7 @@ export async function getNoticias(){
   return Noticia.find().populate("departamento");
 }
 
-export async function addNoticia({deptoId, contenido, nombreArchivo}){
+export async function addNoticia({deptoId, contenido, nombreArchivo, enlace}){
   const departamento = await getDepartamentoById(deptoId);
   
   const noticia = new Noticia({
@@ -13,7 +13,7 @@ export async function addNoticia({deptoId, contenido, nombreArchivo}){
     contenido,
     fechaPublicacion: Date.now(),
     tipoMultimedia: determinarTipo(nombreArchivo),
-    enlaces: []
+    enlaces: [enlace]
   });
 
   const saved = (await noticia.save());
