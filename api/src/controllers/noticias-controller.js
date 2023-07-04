@@ -7,6 +7,7 @@
  * Versión: 1.0.0
  */
 import Noticia from "../models/noticia.js";
+import { publicarArchivos } from "./archivos-controller.js";
 import { getDepartamentoById } from "./departamentos-controller.js";
 
 /**
@@ -20,8 +21,17 @@ export async function getNoticias(index = 1){
 }
 
 /**
+ * Registra la base de dato y obtiene una lista de noticias, 
+ * ordenadas de la mas reciente a la mas antigua y
+ * definiendo un limite de entradas por peticion
+ * @returns Un arreglo de noticias cumpliendo con los filtros establecidos
+ */
+export async function getCountNoticias(){
+  return Noticia.countDocuments();
+}
+
+/**
  * Crea una nueva noticia con datos ingresados por el usuario, y la guarda en MongoDB
- * @param {string} param0.deptoId
  * @returns 
  */
 export async function addNoticia({deptoId, contenido, archivos}){
@@ -34,7 +44,7 @@ export async function addNoticia({deptoId, contenido, archivos}){
     //Se define el momento actual para la creacion de la noticia
     fechaPublicacion: Date.now(),
     //Se guarda el arreglo de archivos adjuntos a la noticia
-    archivos
+    archivos: await publicarArchivos(archivos)
   });
 
   //Se obtiene el objeto guardado en la base de datos ya con su ID y se devuelve al final de la funcion

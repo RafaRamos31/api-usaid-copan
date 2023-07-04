@@ -7,13 +7,32 @@
  * Versión: 1.0.0
  */
 
+import Archivo from "../models/archivo.js";
+
+export async function publicarArchivos(stringArchivos){
+  let mongoArchivos = [];
+  const archivos = JSON.parse(stringArchivos);
+
+  for (let i = 0; i < archivos.length; i++) {
+    const archivo = new Archivo({
+      tipo: determinarTipo(archivos[i].nombre),
+      nombre: archivos[i].nombre,
+      enlace: archivos[i].enlace
+    });
+    await archivo.save();
+
+    mongoArchivos = mongoArchivos.concat(archivo);
+  }
+
+  return mongoArchivos;
+}
 
 /**
  * Obtiene el tipo de un archivo enviado en base a su extension de nombre
  * @param {string} nombreArchivo El nombre del archivo enviado
  * @returns Retorna un string con el tipo de archivo 
  */
-export function determinarTipo(nombreArchivo){
+function determinarTipo(nombreArchivo){
   //Evita el proceso logico al no tener un nombre de archivo
   if(!nombreArchivo) return "";
   

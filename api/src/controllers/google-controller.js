@@ -40,7 +40,6 @@ export async function sendFiles(files){
   try {
     //Se actualiza el arreglo de Archivos cada vez que se sube un archivo.
     for (let i = 0; i < files.length; i++) {
-
       const archivo = new Archivo({
         tipo: determinarTipo(files[i].originalname),
         nombre: files[i].originalname,

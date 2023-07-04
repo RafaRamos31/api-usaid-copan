@@ -1,6 +1,5 @@
 import { getDepartamentos } from "./src/controllers/departamentos-controller.js";
-import { sendFiles } from "./src/controllers/google-controller.js";
-import { addNoticia, getNoticias } from "./src/controllers/noticias-controller.js";
+import { addNoticia, getCountNoticias, getNoticias } from "./src/controllers/noticias-controller.js";
 import multer from "multer";
 
 /**
@@ -23,17 +22,23 @@ export function addRestDirections(app) {
     }
   });
 
-  //POST noticias
-  //Ademas de la ruta y la funcion, se agrega la instancia de Multer para la recepcion de archivos
-  app.post("/api/noticias", upload.any(), async (request, response) => {
-    //Se envian los archivos recibidos a Google Drive y se obtiene la lista de enlaces de los archivos creados
-    const archivos = await sendFiles(request.files);
+  //GET countNoticias
+  app.get("/api/countnoticias", async (request, response) => {
+    try {
+      const count = await getCountNoticias();
+      response.json({"filecount": count});
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener el conteo de noticias: ' + error });
+    }
+  });
 
+  //POST noticias
+  app.post("/api/noticias", upload.any(), async (request, response) => {
     //Se crea un nuevo objeto de noticia y se envia a MongoDB
     const noticia = await addNoticia({
       deptoId: request.body.departamento, 
       contenido: request.body.contenido,
-      archivos: archivos
+      archivos: request.body.archivos
     });
 
     //La API devuelve como respuesta la noticia completa
