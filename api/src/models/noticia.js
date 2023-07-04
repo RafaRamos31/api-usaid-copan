@@ -14,12 +14,13 @@ const schema = new mongoose.Schema({
   contenido: {
     type: String,
   },
-  tipoMultimedia: {
-    type: String,
-  },
-  enlaces:[{
-    type: String,
+  archivos:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Archivo"
   }],
 });
 
+/**
+ * Modelo de entidad de una Noticia
+ */
 export default mongoose.model("Noticia", schema, "Noticias");

@@ -4,9 +4,12 @@ const schema = new mongoose.Schema({
   nombre: {
     type: String,
     required: true,
-    minlength: 3,
   },
-  urlLogo: {
+  tipo: {
+    type: String,
+    required: true
+  },
+  enlace: {
     type: String,
     required: true
   }
@@ -15,4 +18,4 @@ const schema = new mongoose.Schema({
 /**
  * Modelo de entidad de un Departamento
  */
-export default mongoose.model("Departamento", schema, "Departamentos");
+export default mongoose.model("Archivo", schema, "Archivos");
