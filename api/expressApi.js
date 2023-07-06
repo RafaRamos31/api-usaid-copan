@@ -1,6 +1,7 @@
 import { getArchivos } from "./src/controllers/archivos-controller.js";
 import { getDepartamentos } from "./src/controllers/departamentos-controller.js";
 import { addNoticia, getCountNoticias, getNoticias } from "./src/controllers/noticias-controller.js";
+import { getUserById, login, register } from "./src/controllers/usuarios-controller.js";
 import multer from "multer";
 
 /**
@@ -63,6 +64,36 @@ export function addRestDirections(app) {
       response.json(archivos);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los archivos: ' + error });
+    }
+  })
+
+  //POST login
+  app.post("/api/login", upload.any(), async (request, response) => {
+    try {
+      const user = await login(request.body.nombre, request.body.password);
+      response.json(user);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al iniciar sesion: ' + error });
+    }
+  })
+
+  //POST register
+  app.post("/api/register", upload.any(), async (request, response) => {
+    try {
+      const user = await register(request.body.nombre, request.body.password);
+      response.json(user._id);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al registrar al usuario: ' + error });
+    }
+  })
+
+   //GET validate
+  app.get("/api/validate", upload.any(), async (request, response) => {
+    try {
+      const user = await getUserById(request.body.userId);
+      response.json(user);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al validar la sesion actual: ' + error });
     }
   })
 
