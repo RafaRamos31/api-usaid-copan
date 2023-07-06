@@ -43,6 +43,7 @@ export async function sendFiles(files){
       const archivo = new Archivo({
         tipo: determinarTipo(files[i].originalname),
         nombre: files[i].originalname,
+        tamano: 10, //Agregar tamaño de archivo
         enlace: await uploadFile(files[i])
       });
       await archivo.save();

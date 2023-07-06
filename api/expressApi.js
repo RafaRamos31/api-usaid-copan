@@ -1,3 +1,4 @@
+import { getArchivos } from "./src/controllers/archivos-controller.js";
 import { getDepartamentos } from "./src/controllers/departamentos-controller.js";
 import { addNoticia, getCountNoticias, getNoticias } from "./src/controllers/noticias-controller.js";
 import multer from "multer";
@@ -51,7 +52,17 @@ export function addRestDirections(app) {
       const departamentos = await getDepartamentos();
       response.json(departamentos);
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al obtener las noticias: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al obtener los departamentos: ' + error });
+    }
+  })
+
+  //GET archivos
+  app.get("/api/archivos", async (request, response) => {
+    try {
+      const archivos = await getArchivos();
+      response.json(archivos);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los archivos: ' + error });
     }
   })
 

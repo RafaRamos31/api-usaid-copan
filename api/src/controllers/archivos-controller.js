@@ -17,7 +17,10 @@ export async function publicarArchivos(stringArchivos){
     const archivo = new Archivo({
       tipo: determinarTipo(archivos[i].nombre),
       nombre: archivos[i].nombre,
-      enlace: archivos[i].enlace
+      tamano: archivos[i].weight,
+      enlace: 'https://drive.google.com/file/d/' + archivos[i].id + '/view',
+      descargar: 'https://drive.google.com/u/0/uc?id=' + archivos[i].id + '&export=download',
+      totalDescargas: 0
     });
     await archivo.save();
 
@@ -25,6 +28,16 @@ export async function publicarArchivos(stringArchivos){
   }
 
   return mongoArchivos;
+}
+
+/**
+ * Registra la base de dato y obtiene una lista de noticias, 
+ * ordenadas de la mas reciente a la mas antigua y
+ * definiendo un limite de entradas por peticion
+ * @returns Un arreglo de noticias cumpliendo con los filtros establecidos
+ */
+export async function getArchivos(index = 1){
+  return Archivo.find().skip((index-1)*5).limit(5);
 }
 
 /**
