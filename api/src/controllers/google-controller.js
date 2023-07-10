@@ -35,7 +35,7 @@ const auth = new google.auth.GoogleAuth({
  * @param {[File]} files //Un arreglo con todos los archivos enviados para subir al almacenamiento de Google Drive
  * @returns Un arreglo con todos los objetos de Archivo en MongoDB
  */
-export async function sendFiles(files){
+/*export async function sendFiles(files){
   let archivos = [];
   try {
     //Se actualiza el arreglo de Archivos cada vez que se sube un archivo.
@@ -54,7 +54,7 @@ export async function sendFiles(files){
   } catch (f) {
     throw new Error(f.message);
   }
-}
+}*/
 
 /**
  * Proceso encargado de la conexion con Google Drive, y la subida de un archivo, 
@@ -84,4 +84,13 @@ const uploadFile = async (fileObject) => {
   
   //Genera una URL valida en base al ID generado por el archivo guardado
   return 'https://drive.google.com/file/d/' + data.id + '/view';
+};
+
+export const deleteFile = async (driveId) => {
+  try {
+    const result = await google.drive({ version: "v3", auth }).files.delete({fileId: driveId})
+    return result;
+  } catch (error) {
+    console.error('Error al eliminar el archivo:', error);
+  }
 };

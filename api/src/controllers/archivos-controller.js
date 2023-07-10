@@ -8,6 +8,7 @@
  */
 
 import Archivo from "../models/archivo.js";
+import { deleteFile } from "./google-controller.js";
 
 export async function publicarArchivos(stringArchivos){
   let mongoArchivos = [];
@@ -18,6 +19,7 @@ export async function publicarArchivos(stringArchivos){
       tipo: determinarTipo(archivos[i].nombre),
       nombre: archivos[i].nombre,
       tamano: archivos[i].weight,
+      fileId: archivos[i].id,
       enlace: 'https://drive.google.com/file/d/' + archivos[i].id + '/view',
       descargar: 'https://drive.google.com/u/0/uc?id=' + archivos[i].id + '&export=download',
       totalDescargas: 0
@@ -41,11 +43,34 @@ export async function getArchivos(index = 1){
 }
 
 /**
+ * Registra la base de dato y obtiene una lista de noticias, 
+ * ordenadas de la mas reciente a la mas antigua y
+ * definiendo un limite de entradas por peticion
+ * @returns Un arreglo de noticias cumpliendo con los filtros establecidos
+ */
+export async function getArchivoById(idArchivo){
+  try {
+    return Archivo.findById(idArchivo);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+
+export async function eliminarArchivo(idArchivo){
+  const archivoItem = await getArchivoById(idArchivo);
+  await deleteFile(archivoItem.fileId);
+  return archivoItem.delete();
+}
+
+
+/**
  * Obtiene el tipo de un archivo enviado en base a su extension de nombre
  * @param {string} nombreArchivo El nombre del archivo enviado
  * @returns Retorna un string con el tipo de archivo 
  */
-function determinarTipo(nombreArchivo){
+export function determinarTipo(nombreArchivo){
   //Evita el proceso logico al no tener un nombre de archivo
   if(!nombreArchivo) return "";
   

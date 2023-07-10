@@ -1,4 +1,4 @@
-import { getArchivos } from "./src/controllers/archivos-controller.js";
+import { eliminarArchivo, getArchivos, publicarArchivos } from "./src/controllers/archivos-controller.js";
 import { getDepartamentos } from "./src/controllers/departamentos-controller.js";
 import { addNoticia, getCountNoticias, getNoticias } from "./src/controllers/noticias-controller.js";
 import { getUserById, login, register } from "./src/controllers/usuarios-controller.js";
@@ -96,6 +96,21 @@ export function addRestDirections(app) {
       response.status(500).json({ error: 'Ocurrió un error al validar la sesion actual: ' + error });
     }
   })
+
+   //POST archivos
+  app.post("/api/archivos", upload.any(), async (request, response) => {
+
+    const archivos = await publicarArchivos(request.body.archivos)
+
+    response.status(200).json(archivos);
+  });
+
+
+   //DELETE archivos
+  app.post("/api/deleteArchivo", upload.any(), async (request, response) => {
+    const result = await eliminarArchivo(request.body.idArchivo)
+    response.status(200).json(result);
+  });
 
   return app;
 }

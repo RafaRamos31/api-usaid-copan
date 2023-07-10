@@ -13,6 +13,10 @@ const schema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  fileId: {
+    type: String,
+    required: true
+  },
   enlace: {
     type: String,
     required: true
