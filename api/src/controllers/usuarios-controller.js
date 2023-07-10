@@ -53,7 +53,6 @@ export async function register(username, password){
   });
 }
 
-
 function hashPassword(password) {
   return createHash("sha256").update(password).digest("hex");
 }

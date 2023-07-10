@@ -7,12 +7,13 @@
  * Versión: 1.0.0
  */
 import Departamento from "../models/departamento.js";
+import { throwInvalidArgsError, throwInvalidIDError, throwNotFoundException } from "../utilities/errorHandler.js";
 
 /**
  * Obtiene de la base de datos la lista de todos los departamentos o secciones de la regional
  * @returns Un arreglo con todos los departamento de la BD
  */
-export async function getDepartamentos(){
+export async function getAllDepartamentos(){
   return Departamento.find();
 }
 
@@ -22,5 +23,37 @@ export async function getDepartamentos(){
  * @returns un documento JSON con la informacion del departamento seleccionado
  */
 export async function getDepartamentoById(idDepartamento){
-  return await Departamento.findById(idDepartamento);
+  return Departamento.findById(idDepartamento).catch((error) => throwInvalidIDError("Departamento", error.message));
+}
+
+/**
+ * Obtiene de la base de datos la lista de todos los departamentos o secciones de la regional
+ * @returns Un arreglo con todos los departamento de la BD
+ */
+export async function crearDepartamento({nombre, urlLogo}){
+  const departamento = new Departamento({
+    nombre, 
+    urlLogo
+  });
+
+  return departamento.save().catch((error) => throwInvalidArgsError(error.message));
+}
+
+
+export async function modificarDepartamento({idDepartamento, nombre, urlLogo}){
+  const departamento = await getDepartamentoById(idDepartamento);
+  if(!departamento) return throwNotFoundException("Departamento");
+
+  departamento.nombre = nombre;
+  departamento.urlLogo = urlLogo;
+
+  return departamento.save().catch((error) => throwInvalidArgsError(error.message));
+}
+
+
+export async function eliminarDepartamento({idDepartamento}){
+  const departamento = await getDepartamentoById(idDepartamento);
+  if(!departamento) return throwNotFoundException("Departamento");
+
+  return departamento.delete();
 }

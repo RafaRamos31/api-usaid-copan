@@ -8,28 +8,36 @@
  */
 
 import Archivo from "../models/archivo.js";
-import { deleteFile } from "./google-controller.js";
+import { throwInvalidIDError, throwNotFoundException } from "../utilities/errorHandler.js";
+import { deleteDriveFile, uploadDriveFile } from "./google-controller.js";
 
-export async function publicarArchivos(stringArchivos){
-  let mongoArchivos = [];
-  const archivos = JSON.parse(stringArchivos);
+export async function publicarArchivo({nombre, weight, id}){
+  const archivo = new Archivo({
+    tipo: determinarTipo(nombre),
+    nombre: nombre,
+    tamano: weight,
+    fileId: id,
+    enlace: 'https://drive.google.com/file/d/' + id + '/view',
+    descargar: 'https://drive.google.com/u/0/uc?id=' + id + '&export=download',
+    totalDescargas: 0
+  });
 
-  for (let i = 0; i < archivos.length; i++) {
-    const archivo = new Archivo({
-      tipo: determinarTipo(archivos[i].nombre),
-      nombre: archivos[i].nombre,
-      tamano: archivos[i].weight,
-      fileId: archivos[i].id,
-      enlace: 'https://drive.google.com/file/d/' + archivos[i].id + '/view',
-      descargar: 'https://drive.google.com/u/0/uc?id=' + archivos[i].id + '&export=download',
-      totalDescargas: 0
+  return archivo.save();
+}
+
+
+export async function crearArchivos(filesArray){
+  let files = []
+
+  for(let i=0; i<filesArray.length; i++){
+    const archivo = await publicarArchivo({
+      nombre: filesArray[i].originalname, 
+      weight: filesArray[i].size, 
+      id: await uploadDriveFile(filesArray[i])
     });
-    await archivo.save();
-
-    mongoArchivos = mongoArchivos.concat(archivo);
+    files = files.concat(archivo);
   }
-
-  return mongoArchivos;
+  return files;
 }
 
 /**
@@ -38,8 +46,9 @@ export async function publicarArchivos(stringArchivos){
  * definiendo un limite de entradas por peticion
  * @returns Un arreglo de noticias cumpliendo con los filtros establecidos
  */
-export async function getArchivos(index = 1){
-  return Archivo.find().skip((index-1)*5).limit(5);
+export async function getArchivos(index = 1, type = undefined){
+  const queryFilter = type ? {tipo: type} : {};
+  return Archivo.find(queryFilter).skip((index-1)*5).limit(5);
 }
 
 /**
@@ -49,21 +58,32 @@ export async function getArchivos(index = 1){
  * @returns Un arreglo de noticias cumpliendo con los filtros establecidos
  */
 export async function getArchivoById(idArchivo){
-  try {
-    return Archivo.findById(idArchivo);
-  } catch (error) {
-    console.error(error);
-  }
+  return Archivo.findById(idArchivo).catch((error) => throwInvalidIDError("Archivo", error.message));
 }
 
+
+export async function getCountArchivos(type = undefined){
+  const queryFilter = type ? {tipo: type} : {};
+  return Archivo.countDocuments(queryFilter);
+}
+
+
+export async function sumarDescarga(idArchivo){
+  const archivo = await getArchivoById(idArchivo);
+  if(!archivo) return throwNotFoundException("Archivo");
+
+  archivo.totalDescargas = archivo.totalDescargas + 1;
+  return archivo.save();
+}
 
 
 export async function eliminarArchivo(idArchivo){
-  const archivoItem = await getArchivoById(idArchivo);
-  await deleteFile(archivoItem.fileId);
-  return archivoItem.delete();
-}
+  const archivo = await getArchivoById(idArchivo);
+  if(!archivo) return throwNotFoundException("Archivo");
 
+  await deleteDriveFile(archivo.fileId);
+  return archivo.delete();
+}
 
 /**
  * Obtiene el tipo de un archivo enviado en base a su extension de nombre

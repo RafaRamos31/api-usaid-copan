@@ -10,8 +10,6 @@ import { google } from "googleapis";
 import stream from "stream";
 import path from "path";
 import { fileURLToPath } from 'url';
-import Archivo from "../models/archivo.js";
-import { determinarTipo } from "./archivos-controller.js";
 
 //Procedimiento para el correcto enrutamiento a un documento ubicado en la raiz del proyecto
 const __filename = fileURLToPath(import.meta.url);
@@ -30,39 +28,12 @@ const auth = new google.auth.GoogleAuth({
 });
 
 /**
- * Procesa los archivos recibidos en la peticion POST de la API, 
- * y los envia a Google Drive, y generando Objetos de tipo Archivo almacenados en MongoDB
- * @param {[File]} files //Un arreglo con todos los archivos enviados para subir al almacenamiento de Google Drive
- * @returns Un arreglo con todos los objetos de Archivo en MongoDB
- */
-/*export async function sendFiles(files){
-  let archivos = [];
-  try {
-    //Se actualiza el arreglo de Archivos cada vez que se sube un archivo.
-    for (let i = 0; i < files.length; i++) {
-      const archivo = new Archivo({
-        tipo: determinarTipo(files[i].originalname),
-        nombre: files[i].originalname,
-        tamano: 10, //Agregar tamaño de archivo
-        enlace: await uploadFile(files[i])
-      });
-      await archivo.save();
-
-      archivos = archivos.concat(archivo);
-    }
-    return archivos;
-  } catch (f) {
-    throw new Error(f.message);
-  }
-}*/
-
-/**
  * Proceso encargado de la conexion con Google Drive, y la subida de un archivo, 
  * devolviendo el enlace formateado de dicho archivo
  * @param {File} fileObject El archivo a ser subido a Google Drive
  * @returns El enlace generado del archivo subido
  */
-const uploadFile = async (fileObject) => {
+export const uploadDriveFile = async (fileObject) => {
   //Genera un stream de datos para el procesamiento de los Bytes del archivo
   const bufferStream = new stream.PassThrough();
   bufferStream.end(fileObject.buffer);
@@ -83,10 +54,10 @@ const uploadFile = async (fileObject) => {
   });
   
   //Genera una URL valida en base al ID generado por el archivo guardado
-  return 'https://drive.google.com/file/d/' + data.id + '/view';
+  return data.id;
 };
 
-export const deleteFile = async (driveId) => {
+export const deleteDriveFile = async (driveId) => {
   try {
     const result = await google.drive({ version: "v3", auth }).files.delete({fileId: driveId})
     return result;
