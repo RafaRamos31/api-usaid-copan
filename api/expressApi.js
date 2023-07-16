@@ -230,7 +230,7 @@ export function addRestDirections(app) {
 
 
   // * * *  USUARIOS  * * *
-
+/*
   //POST login
   app.post("/api/login", upload.any(), async (request, response) => {
     try {
@@ -260,6 +260,6 @@ export function addRestDirections(app) {
       response.status(500).json({ error: 'Ocurrió un error al validar la sesion actual: ' + error });
     }
   })
-  
+  */
   return app;
 }
