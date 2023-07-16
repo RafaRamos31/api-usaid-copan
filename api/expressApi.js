@@ -87,7 +87,7 @@ export function addRestDirections(app) {
       response.status(500).json({ error: 'Ocurrió un error al obtener las noticias: ' + error });
     }
   });
-
+/*
   //GET countNoticias
   app.get("/api/countnoticias", async (request, response) => {
     try {
@@ -97,7 +97,7 @@ export function addRestDirections(app) {
       response.status(500).json({ error: 'Ocurrió un error al obtener el conteo de noticias: ' + error });
     }
   });
-
+*/
   //POST noticias
   app.post("/api/noticias", upload.any(), async (request, response) => {
     try {
@@ -133,7 +133,7 @@ export function addRestDirections(app) {
     }
   });
 
-
+/*
   //PUT modificar noticias
   app.put("/api/noticias", upload.any(), async (request, response) => {
     try {
@@ -154,7 +154,7 @@ export function addRestDirections(app) {
       response.status(500).json({ error: 'Ocurrió un error al eliminar noticia: ' + error });
     }
   });
-
+*/
 
   // * * *  ARCHIVOS  * * *
 
@@ -170,7 +170,7 @@ export function addRestDirections(app) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los archivos: ' + error });
     }
   })
-
+/*
   //GET countArchivos
   app.get("/api/countArchivos", upload.any(), async (request, response) => {
     try {
@@ -180,7 +180,7 @@ export function addRestDirections(app) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los archivos: ' + error });
     }
   })
-
+*/
   //POST publicar archivo ya existente
   app.post("/api/archivos", upload.any(), async (request, response) => {
     const data = {
@@ -206,7 +206,7 @@ export function addRestDirections(app) {
     }
     
   });
-
+/*
   //PUT aumentar descarga
   app.put("/api/archivos", upload.any(), async (request, response) => {
     try {
@@ -217,7 +217,7 @@ export function addRestDirections(app) {
     }
   });
 
-  
+ */ 
    //DELETE eliminar archivo
   app.delete("/api/archivos", upload.any(), async (request, response) => {
     try {
