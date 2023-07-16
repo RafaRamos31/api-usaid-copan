@@ -25,9 +25,8 @@ export async function publicarArchivo({nombre, weight, id}){
   return archivo.save();
 }
 
-
 export async function crearArchivos(filesArray){
-  let files = []
+  let files = [];
 
   for(let i=0; i<filesArray.length; i++){
     const archivo = await publicarArchivo({

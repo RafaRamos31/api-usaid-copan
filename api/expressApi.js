@@ -183,8 +183,13 @@ export function addRestDirections(app) {
 
   //POST publicar archivo ya existente
   app.post("/api/archivos", upload.any(), async (request, response) => {
+    const data = {
+      nombre: request.body.nombre,
+      weight: request.body.weight,
+      id: request.body.id,
+    }
     try {
-      const archivos = await publicarArchivo(request.body.archivos)
+      const archivos = await publicarArchivo(data)
       response.status(200).json(archivos);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al publicar los archivos: ' + error });
