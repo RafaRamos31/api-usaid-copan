@@ -78,9 +78,9 @@ export function addRestDirections(app) {
 
   //GET noticias
   app.get("/api/noticias/:index?", upload.any(), async (request, response) => {
-    const index = request.params.index;
-    const idDepartamento = request.body.idDepartamento;
     try {
+      const index = request.params.index;
+      const idDepartamento = request.body.idDepartamento;
       const noticias = await getNoticias(index, idDepartamento);
       response.json(noticias);
     } catch (error) {
