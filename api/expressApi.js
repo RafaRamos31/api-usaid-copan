@@ -15,7 +15,7 @@ export function addRestDirections(app) {
 
 
   // * * *  DEPARTAMENTOS  * * *
-
+/*
   //GET departamentos
   app.get("/api/departamentos", async (request, response) => {
     try {
@@ -73,7 +73,7 @@ export function addRestDirections(app) {
     }
   })
 
-
+*/
   // * * *  NOTICIAS  * * *
 
   //GET noticias
