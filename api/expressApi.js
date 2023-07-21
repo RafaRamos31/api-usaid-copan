@@ -1,7 +1,7 @@
-import { crearArchivos, eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga } from "./src/controllers/archivos-controller.js";
-import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento } from "./src/controllers/departamentos-controller.js";
-import { addNoticia, addNoticiaPC, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia } from "./src/controllers/noticias-controller.js";
-import { getUserById, login, register } from "./src/controllers/usuarios-controller.js";
+import { crearArchivos, eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga } from "../src/controllers/archivos-controller.js";
+import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento } from "../src/controllers/departamentos-controller.js";
+import { addNoticia, addNoticiaPC, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia } from "../src/controllers/noticias-controller.js";
+import { getUserById, login, register } from "../src/controllers/usuarios-controller.js";
 import multer from "multer";
 
 /**
@@ -78,9 +78,9 @@ export function addRestDirections(app) {
 
   //GET noticias
   app.get("/api/noticias/:index?", upload.any(), async (request, response) => {
-    const index = request.params.index;
-    const idDepartamento = request.body.idDepartamento;
     try {
+      const index = request.params.index;
+      const idDepartamento = request.body.idDepartamento;
       const noticias = await getNoticias(index, idDepartamento);
       response.json(noticias);
     } catch (error) {
