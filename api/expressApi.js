@@ -207,6 +207,26 @@ export function addRestDirections(app) {
     
   });
 
+  //POST envia los archivos por partes mas pequeñas
+  app.post("/api/chunks", upload.any(), async (request, response) => {
+    try {
+      const totalChunks = request.body.totalChunks;
+      const actual = request.body.actual;
+      const totalSize = request.body.totalSize;
+      const data = request.files[0];
+      response.status(200).json({
+        chunk: `${actual}/${totalChunks}`,
+        status: totalChunks == actual ? 'complete' : "loading",
+        size: data.size,
+        totalSize,
+        url: ""
+    });
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al crear los archivos: ' + error });
+    }
+    
+  });
+
   //PUT aumentar descarga
   app.put("/api/archivos", upload.any(), async (request, response) => {
     try {
