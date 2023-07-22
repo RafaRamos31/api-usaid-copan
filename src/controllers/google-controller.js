@@ -16,7 +16,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 //Se define la ruta al archivo con las credenciales de acceso como servicio de Google Drive
-const KEYFILENAME = path.join(__dirname, '../../../credentials.json');
+const KEYFILENAME = path.join(__dirname, '../../credentials.json');
 
 //Se define el alcance del permiso de operacion, en este caso acceso total en Drive
 const SCOPES = ["https://www.googleapis.com/auth/drive"];
@@ -64,4 +64,41 @@ export const deleteDriveFile = async (driveId) => {
   } catch (error) {
     console.error('Error al eliminar el archivo:', error);
   }
+};
+
+export const createEmptyFile = async (name, type) => {
+  //Se crea el archivo usando las credenciales de Google Drive y el stream de bytes que componen el archivo.
+  const { data } = await google.drive({ version: "v3", auth }).files.create({
+    media: {
+      mimeType: type
+    },
+    requestBody: {
+      //Se define que el archivo conserve su nombre original
+      name: name,
+      //Se establece la carpeta donde se guardará la informacion
+      parents: [process.env.GOOGLE_FOLDER_ID],
+    },
+    fields: "id,name",
+  });
+  
+  //Genera una URL valida en base al ID generado por el archivo guardado
+  return data.id;
+};
+
+export const updateChunk = async (fileId, chunk, start, end, fileSize) => {
+  //Genera un stream de datos para el procesamiento de los Bytes del archivo
+  const bufferStream = new stream.PassThrough();
+  bufferStream.end(chunk.buffer);
+
+  //Se crea el archivo usando las credenciales de Google Drive y el stream de bytes que componen el archivo.
+  drive.files.update({
+    fileId,
+    media: {
+      body: bufferStream
+    },
+    requestBody: {
+      // Establece el rango de bytes del fragmento
+      range: `bytes ${start}-${end - 1}/${fileSize}`,
+    },
+  });
 };

@@ -1,4 +1,4 @@
-import { crearArchivos, eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga } from "../src/controllers/archivos-controller.js";
+import { crearArchivos, eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk } from "../src/controllers/archivos-controller.js";
 import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento } from "../src/controllers/departamentos-controller.js";
 import { addNoticia, addNoticiaPC, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia } from "../src/controllers/noticias-controller.js";
 import { getUserById, login, register } from "../src/controllers/usuarios-controller.js";
@@ -208,23 +208,36 @@ export function addRestDirections(app) {
   });
 
   //POST envia los archivos por partes mas pequeñas
+  app.post("/api/createChunk", upload.any(), async (request, response) => {
+    try {
+      const fileName = request.body.fileName;
+      const type = request.body.type;
+
+      response.status(200).json({id: await crearArchivoChunk(fileName, type)})
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al crear el archivo de Drive: ' + error });
+    } 
+  });
+
+  //POST envia los archivos por partes mas pequeñas
   app.post("/api/chunks", upload.any(), async (request, response) => {
     try {
+      const fileName = request.body.totalChunks;
+      const type = request.body.type;
       const totalChunks = request.body.totalChunks;
       const actual = request.body.actual;
       const totalSize = request.body.totalSize;
+      const start = request.body.start;
+      const end = request.body.end;
       const data = request.files[0];
-      response.status(200).json({
-        chunk: `${actual}/${totalChunks}`,
-        status: totalChunks == actual ? 'complete' : "loading",
-        size: data.size,
-        totalSize,
-        url: ""
-    });
+
+      
+      response.status(200).json({id, loading: actual != totalChunks})
+
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al crear los archivos: ' + error });
-    }
-    
+    } 
   });
 
   //PUT aumentar descarga

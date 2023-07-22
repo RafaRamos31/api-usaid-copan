@@ -9,7 +9,7 @@
 
 import Archivo from "../models/archivo.js";
 import { throwInvalidIDError, throwNotFoundException } from "../utilities/errorHandler.js";
-import { deleteDriveFile, uploadDriveFile } from "./google-controller.js";
+import { deleteDriveFile, uploadDriveFile, createEmptyFile } from "./google-controller.js";
 
 export async function publicarArchivo({nombre, weight, id}){
   const archivo = new Archivo({
@@ -36,6 +36,24 @@ export async function crearArchivos(filesArray){
     });
     files = files.concat(archivo);
   }
+  return files;
+}
+
+
+export async function crearArchivoChunk(fileName, type){
+  return createEmptyFile(fileName, type);
+}
+
+
+export async function subirChunks(fileName, type){
+  if(actual == 0){
+    
+    updateChunk(id, data, start, end, totalSize)
+    response.status(200).json({id, loading: actual != totalChunks})
+    return;
+  } 
+
+  updateChunk(id, data, start, end, totalSize)
   return files;
 }
 
