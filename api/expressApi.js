@@ -1,6 +1,5 @@
-import { crearArchivos, eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk } from "../src/controllers/archivos-controller.js";
+import { crearArchivos, eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks } from "../src/controllers/archivos-controller.js";
 import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento } from "../src/controllers/departamentos-controller.js";
-import { updateChunk } from "../src/controllers/google-controller.js";
 import { addNoticia, addNoticiaPC, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia } from "../src/controllers/noticias-controller.js";
 import { getUserById, login, register } from "../src/controllers/usuarios-controller.js";
 import multer from "multer";
@@ -234,7 +233,7 @@ export function addRestDirections(app) {
 
       response.status(200).json({
         chunck: `${actual}/${totalChunks}`,
-        ...updateChunk(id, data, start, end, totalSize)
+        ...subirChunks(id, data, start, end, totalSize)
       })
 
     } catch (error) {
