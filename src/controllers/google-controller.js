@@ -90,16 +90,18 @@ export const updateChunk = async (fileId, chunk, start, end, fileSize) => {
   const bufferStream = new stream.PassThrough();
   bufferStream.end(chunk.buffer);
 
+  const range = end != fileSize ? `bytes ${start}-${end - 1}/${fileSize}` : `bytes ${start}-${end}/${fileSize}`;
+  
   //Se crea el archivo usando las credenciales de Google Drive y el stream de bytes que componen el archivo.
-  const {data} = await google.drive({ version: "v3", auth }).files.update({
+  await google.drive({ version: "v3", auth }).files.update({
     fileId,
     media: {
       body: bufferStream
     },
     requestBody: {
       // Establece el rango de bytes del fragmento
-      range: `bytes ${start}-${end - 1}/${fileSize}`,
+      range
     },
   });
-  return `Uploaded range: ${start}-${end - 1}/${fileSize}`;
+  return `Uploaded range: ${range}`;
 };
