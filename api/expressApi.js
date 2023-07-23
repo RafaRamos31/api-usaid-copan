@@ -233,7 +233,7 @@ export function addRestDirections(app) {
 
       response.status(200).json({
         chunck: `${actual}/${totalChunks}`,
-        ...subirChunks(id, data, start, end, totalSize)
+        ...await subirChunks(id, data, start, end, totalSize)
       })
 
     } catch (error) {
