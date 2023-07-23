@@ -1,5 +1,6 @@
 import { crearArchivos, eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk } from "../src/controllers/archivos-controller.js";
 import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento } from "../src/controllers/departamentos-controller.js";
+import { updateChunk } from "../src/controllers/google-controller.js";
 import { addNoticia, addNoticiaPC, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia } from "../src/controllers/noticias-controller.js";
 import { getUserById, login, register } from "../src/controllers/usuarios-controller.js";
 import multer from "multer";
@@ -223,8 +224,7 @@ export function addRestDirections(app) {
   //POST envia los archivos por partes mas pequeñas
   app.post("/api/chunks", upload.any(), async (request, response) => {
     try {
-      const fileName = request.body.totalChunks;
-      const type = request.body.type;
+      const id = request.body.id;
       const totalChunks = request.body.totalChunks;
       const actual = request.body.actual;
       const totalSize = request.body.totalSize;
@@ -232,11 +232,13 @@ export function addRestDirections(app) {
       const end = request.body.end;
       const data = request.files[0];
 
-      
-      response.status(200).json({id, loading: actual != totalChunks})
+      response.status(200).json({
+        chunck: `${actual}/${totalChunks}`,
+        ...updateChunk(id, data, start, end, totalSize)
+      })
 
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al crear los archivos: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al subir el archivo: ' + error });
     } 
   });
 
