@@ -91,7 +91,7 @@ export const updateChunk = async (fileId, chunk, start, end, fileSize) => {
   bufferStream.end(chunk.buffer);
 
   //Se crea el archivo usando las credenciales de Google Drive y el stream de bytes que componen el archivo.
-  drive.files.update({
+  const {data} = await google.drive({ version: "v3", auth }).files.update({
     fileId,
     media: {
       body: bufferStream
@@ -101,4 +101,5 @@ export const updateChunk = async (fileId, chunk, start, end, fileSize) => {
       range: `bytes ${start}-${end - 1}/${fileSize}`,
     },
   });
+  return data;
 };
