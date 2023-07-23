@@ -101,5 +101,5 @@ export const updateChunk = async (fileId, chunk, start, end, fileSize) => {
       range: `bytes ${start}-${end - 1}/${fileSize}`,
     },
   });
-  return data;
+  return `Uploaded range: ${start}-${end - 1}/${fileSize}`;
 };

@@ -45,9 +45,9 @@ export async function crearArchivoChunk(fileName, type){
 }
 
 
-export async function subirChunks(id, data, start, end, totalSize){
-  await updateChunk(id, data, start, end, totalSize)
-  return({id, loading: actual != totalChunks})
+export async function subirChunks(id, data, start, end, totalSize, actual, totalChunks){
+  const response = await updateChunk(id, data, start, end, totalSize)
+  return({id, loading: actual != totalChunks, range: response,  chunck: `${actual}/${totalChunks}`,})
 }
 
 /**

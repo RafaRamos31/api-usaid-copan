@@ -231,11 +231,8 @@ export function addRestDirections(app) {
       const end = request.body.end;
       const data = request.files[0];
 
-      response.status(200).json({
-        chunck: `${actual}/${totalChunks}`,
-        ...await subirChunks(id, data, start, end, totalSize)
-      })
-
+      const result = await subirChunks(id, data, start, end, totalSize, actual, totalChunks);
+      response.status(200).json(result)
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al subir el archivo: ' + error });
     } 
