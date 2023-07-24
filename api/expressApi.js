@@ -1,6 +1,6 @@
-import { crearArchivos, eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks } from "../src/controllers/archivos-controller.js";
+import { eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks } from "../src/controllers/archivos-controller.js";
 import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento } from "../src/controllers/departamentos-controller.js";
-import { addNoticia, addNoticiaPC, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia } from "../src/controllers/noticias-controller.js";
+import { addNoticia, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia } from "../src/controllers/noticias-controller.js";
 import { getUserById, login, register } from "../src/controllers/usuarios-controller.js";
 import multer from "multer";
 
@@ -116,24 +116,6 @@ export function addRestDirections(app) {
   });
 
 
-  //POST noticias
-  app.post("/api/noticiasFile", upload.any(), async (request, response) => {
-    try {
-      //Se crea un nuevo objeto de noticia y se envia a MongoDB
-      const noticia = await addNoticiaPC({
-        deptoId: request.body.departamento, 
-        contenido: request.body.contenido,
-        files: request.files
-      });
-
-      //La API devuelve como respuesta la noticia completa
-      response.status(200).json({noticia});
-    } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al publicar noticia: ' + error });
-    }
-  });
-
-
   //PUT modificar noticias
   app.put("/api/noticias", upload.any(), async (request, response) => {
     try {
@@ -196,16 +178,6 @@ export function addRestDirections(app) {
     }
   });
 
-  //POST publicar archivos nuevos
-  app.post("/api/files", upload.any(), async (request, response) => {
-    try {
-      const archivos = await crearArchivos(request.files);
-      response.status(200).json(archivos);
-    } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al crear los archivos: ' + error });
-    }
-    
-  });
 
   //POST envia los archivos por partes mas pequeñas
   app.post("/api/createChunk", upload.any(), async (request, response) => {

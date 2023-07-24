@@ -8,7 +8,7 @@
  */
 import Noticia from "../models/noticia.js";
 import { throwInvalidIDError, throwNotFoundException } from "../utilities/errorHandler.js";
-import { crearArchivos, eliminarArchivo, publicarArchivo } from "./archivos-controller.js";
+import { eliminarArchivo, publicarArchivo } from "./archivos-controller.js";
 import { getDepartamentoById } from "./departamentos-controller.js";
 
 /**
@@ -49,30 +49,8 @@ export async function addNoticia({deptoId, contenido, stringArchivos}){
   if(!departamento) return throwNotFoundException("Departamento");
 
   const archivos = JSON.parse(stringArchivos).map(
-    async archivo => await publicarArchivo(archivo)
+    archivo => publicarArchivo(archivo)
   )
-
-  const noticia = new Noticia({
-    departamento, 
-    contenido,
-    //Se define el momento actual para la creacion de la noticia
-    fechaPublicacion: Date.now(),
-    //Se guarda el arreglo de archivos adjuntos a la noticia
-    archivos: archivos
-  });
-
-  //Se obtiene el objeto guardado en la base de datos ya con su ID y se devuelve al final de la funcion
-  const saved = (await noticia.save());
-  return saved;
-}
-
-
-export async function addNoticiaPC({deptoId, contenido, files}){
-  //Se obtiene el objeto con la informacion sobre el departamento vinculado a la noticia a crear
-  const departamento = await getDepartamentoById(deptoId);
-  if(!departamento) return throwNotFoundException("Departamento");
-
-  const archivos = await crearArchivos(files);
 
   const noticia = new Noticia({
     departamento, 
@@ -85,7 +63,6 @@ export async function addNoticiaPC({deptoId, contenido, files}){
 
   return noticia.save();
 }
-
 
 export async function modificarNoticia(idNoticia, contenido=null){
   const noticia = await getNoticiaById(idNoticia);

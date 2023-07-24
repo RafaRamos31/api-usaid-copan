@@ -9,7 +9,7 @@
 
 import Archivo from "../models/archivo.js";
 import { throwInvalidIDError, throwNotFoundException } from "../utilities/errorHandler.js";
-import { deleteDriveFile, uploadDriveFile, createEmptyFile, updateChunk } from "./google-controller.js";
+import { deleteDriveFile, createEmptyFile, updateChunk } from "./google-controller.js";
 
 export async function publicarArchivo({nombre, weight, id}){
   const archivo = new Archivo({
@@ -22,21 +22,8 @@ export async function publicarArchivo({nombre, weight, id}){
     totalDescargas: 0
   });
 
-  return archivo.save();
-}
-
-export async function crearArchivos(filesArray){
-  let files = [];
-
-  for(let i=0; i<filesArray.length; i++){
-    const archivo = await publicarArchivo({
-      nombre: filesArray[i].originalname, 
-      weight: filesArray[i].size, 
-      id: await uploadDriveFile(filesArray[i])
-    });
-    files = files.concat(archivo);
-  }
-  return files;
+  archivo.save();
+  return archivo;
 }
 
 

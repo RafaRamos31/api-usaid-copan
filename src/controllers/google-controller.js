@@ -27,45 +27,6 @@ const auth = new google.auth.GoogleAuth({
   scopes: SCOPES,
 });
 
-/**
- * Proceso encargado de la conexion con Google Drive, y la subida de un archivo, 
- * devolviendo el enlace formateado de dicho archivo
- * @param {File} fileObject El archivo a ser subido a Google Drive
- * @returns El enlace generado del archivo subido
- */
-export const uploadDriveFile = async (fileObject) => {
-  //Genera un stream de datos para el procesamiento de los Bytes del archivo
-  const bufferStream = new stream.PassThrough();
-  bufferStream.end(fileObject.buffer);
-
-  //Se crea el archivo usando las credenciales de Google Drive y el stream de bytes que componen el archivo.
-  const { data } = await google.drive({ version: "v3", auth }).files.create({
-    media: {
-      mimeType: fileObject.mimeType,
-      body: bufferStream,
-    },
-    requestBody: {
-      //Se define que el archivo conserve su nombre original
-      name: fileObject.originalname,
-      //Se establece la carpeta donde se guardará la informacion
-      parents: [process.env.GOOGLE_FOLDER_ID],
-    },
-    fields: "id,name",
-  });
-  
-  //Genera una URL valida en base al ID generado por el archivo guardado
-  return data.id;
-};
-
-export const deleteDriveFile = async (driveId) => {
-  try {
-    const result = await google.drive({ version: "v3", auth }).files.delete({fileId: driveId})
-    return result;
-  } catch (error) {
-    console.error('Error al eliminar el archivo:', error);
-  }
-};
-
 export const createEmptyFile = async (name, type) => {
   //Se crea el archivo usando las credenciales de Google Drive y el stream de bytes que componen el archivo.
   const { data } = await google.drive({ version: "v3", auth }).files.create({
@@ -104,4 +65,13 @@ export const updateChunk = async (fileId, chunk, start, end, fileSize) => {
     },
   });
   return `Uploaded range: ${range}`;
+};
+
+export const deleteDriveFile = async (driveId) => {
+  try {
+    const result = await google.drive({ version: "v3", auth }).files.delete({fileId: driveId})
+    return result;
+  } catch (error) {
+    console.error('Error al eliminar el archivo:', error);
+  }
 };
