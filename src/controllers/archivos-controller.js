@@ -82,7 +82,7 @@ export async function eliminarArchivo(idArchivo){
   const archivo = await getArchivoById(idArchivo);
   if(!archivo) return throwNotFoundException("Archivo");
 
-  await deleteDriveFile(archivo.fileId);
+  deleteDriveFile(archivo.fileId);
   return archivo.delete();
 }
 

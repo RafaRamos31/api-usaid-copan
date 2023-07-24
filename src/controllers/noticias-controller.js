@@ -79,8 +79,8 @@ export async function eliminarNoticia(idNoticia){
   const noticia = await getNoticiaById(idNoticia);
   if(!noticia) return throwNotFoundException("Noticia");
 
-  noticia.archivos.forEach( async (archivo) => {
-    await eliminarArchivo(archivo._id);
+  noticia.archivos.forEach((archivo) => {
+    eliminarArchivo(archivo._id);
   });
 
   return noticia.delete();
