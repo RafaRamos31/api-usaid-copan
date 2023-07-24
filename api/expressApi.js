@@ -256,9 +256,9 @@ export function addRestDirections(app) {
   })
 
    //GET validate
-  app.get("/api/validate", upload.any(), async (request, response) => {
+  app.get("/api/validate/:userId", upload.any(), async (request, response) => {
     try {
-      const user = await getUserById(request.body.userId);
+      const user = await getUserById(request.params.userId);
       response.json(user);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al validar la sesion actual: ' + error });
