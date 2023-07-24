@@ -105,7 +105,7 @@ export function addRestDirections(app) {
       const noticia = await addNoticia({
         deptoId: request.body.departamento, 
         contenido: request.body.contenido,
-        archivos: request.body.archivos
+        stringArchivos: request.body.archivos
       });
 
       //La API devuelve como respuesta la noticia completa

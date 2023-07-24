@@ -11,7 +11,7 @@ import Archivo from "../models/archivo.js";
 import { throwInvalidIDError, throwNotFoundException } from "../utilities/errorHandler.js";
 import { deleteDriveFile, createEmptyFile, updateChunk } from "./google-controller.js";
 
-export async function publicarArchivo({nombre, weight, id}){
+export function publicarArchivo({nombre, weight, id}){
   const archivo = new Archivo({
     tipo: determinarTipo(nombre),
     nombre: nombre,
@@ -22,8 +22,12 @@ export async function publicarArchivo({nombre, weight, id}){
     totalDescargas: 0
   });
 
-  archivo.save();
+  saveChanges(archivo);
   return archivo;
+}
+
+async function saveChanges(archivo){
+  archivo.save();
 }
 
 
