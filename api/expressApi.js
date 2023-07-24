@@ -77,10 +77,10 @@ export function addRestDirections(app) {
   // * * *  NOTICIAS  * * *
 
   //GET noticias
-  app.get("/api/noticias/:index?", upload.any(), async (request, response) => {
+  app.get("/api/noticias/:index?/:idDepartamento?", upload.any(), async (request, response) => {
     try {
       const index = request.params.index;
-      const idDepartamento = request.body.idDepartamento;
+      const idDepartamento = request.params.idDepartamento;
       const noticias = await getNoticias(index, idDepartamento);
       response.json(noticias);
     } catch (error) {
