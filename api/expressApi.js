@@ -142,11 +142,11 @@ export function addRestDirections(app) {
   // * * *  ARCHIVOS  * * *
 
   //GET archivos
-  app.get("/api/archivos", upload.any(), async (request, response) => {
+  app.get("/api/archivos/:index?/:type?", upload.any(), async (request, response) => {
     try {
       const archivos = await getArchivos(
-        request.body.index,
-        request.body.type
+        request.params.index,
+        request.params.type
       );
       response.json(archivos);
     } catch (error) {
