@@ -89,9 +89,10 @@ export function addRestDirections(app) {
   });
 
   //GET countNoticias
-  app.get("/api/countnoticias", async (request, response) => {
+  app.get("/api/countnoticias/:idDepartamento?", async (request, response) => {
     try {
-      const count = await getCountNoticias();
+      const idDepartamento = request.params.idDepartamento;
+      const count = await getCountNoticias(idDepartamento);
       response.json({"filecount": count});
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener el conteo de noticias: ' + error });

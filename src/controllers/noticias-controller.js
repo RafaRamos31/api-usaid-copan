@@ -34,8 +34,9 @@ export async function getNoticiaById(idNoticia){
  * definiendo un limite de entradas por peticion
  * @returns Un arreglo de noticias cumpliendo con los filtros establecidos
  */
-export async function getCountNoticias(){
-  return Noticia.countDocuments();
+export async function getCountNoticias(idDepartamento){
+  const queryFilter = idDepartamento ? {departamento: {_id: idDepartamento}} : {};
+  return Noticia.countDocuments(queryFilter);
 }
 
 
