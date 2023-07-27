@@ -9,6 +9,9 @@ const schema = new mongoose.Schema({
     type: String,
     required: true
   },
+  docType: {
+    type: String
+  },
   tamano: {
     type: Number,
     required: true

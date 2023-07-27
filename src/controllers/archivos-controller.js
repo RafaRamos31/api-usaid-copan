@@ -14,6 +14,7 @@ import { deleteDriveFile, createEmptyFile, updateChunk } from "./google-controll
 export function publicarArchivo({nombre, weight, id}){
   const archivo = new Archivo({
     tipo: determinarTipo(nombre),
+    docType: determinarTipoArchivo(nombre),
     nombre: nombre,
     tamano: weight,
     fileId: id,
@@ -49,7 +50,7 @@ export async function subirChunks(id, data, start, end, totalSize, actual, total
  */
 export async function getArchivos(index = 1, type = undefined){
   const queryFilter = type ? {tipo: type} : {};
-  return Archivo.find(queryFilter).skip((index-1)*5).limit(5);
+  return Archivo.find(queryFilter).skip((index-1)*15).limit(15);
 }
 
 /**
@@ -118,4 +119,37 @@ export function determinarTipo(nombreArchivo){
 
   //Si se envia un archivo no vacio, pero que no tiene ningun de las extensiones permitidas
   return "No válido";
+}
+
+/**
+ * Obtiene el tipo de un archivo enviado en base a su extension de nombre
+ * @param {string} nombreArchivo El nombre del archivo enviado
+ * @returns Retorna un string con el tipo de archivo 
+ */
+export function determinarTipoArchivo(nombreArchivo){
+  //Evita el proceso logico al no tener un nombre de archivo
+  if(!nombreArchivo) return null;
+
+  //Se obtiene la terminacion del nombre de archivo luego del punto.
+  const extension = nombreArchivo.split('.').pop();
+
+  //Se compara la extension de archivo con los diferentes grupos de extensiones
+  if(['pdf'].includes(extension)) {
+    return 'pdf';
+  }
+
+  if(['doc', 'docx'].includes(extension)) {
+    return 'word';
+  }
+
+  if(['ppt', 'pptx'].includes(extension)) {
+    return 'ppt';
+  }
+
+  if(['xls', 'xlsx', 'xlsm'].includes(extension)) {
+    return 'excel';
+  }
+
+  //Si se envia un archivo no vacio, pero que no tiene ningun de las extensiones permitidas
+  return null;
 }
