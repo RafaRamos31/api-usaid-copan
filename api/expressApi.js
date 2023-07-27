@@ -212,9 +212,9 @@ export function addRestDirections(app) {
   });
 
   //PUT aumentar descarga
-  app.put("/api/archivos", upload.any(), async (request, response) => {
+  app.put("/api/archivos/:id?", upload.any(), async (request, response) => {
     try {
-      const result = await sumarDescarga(request.body.idArchivo)
+      const result = await sumarDescarga(request.params.id)
       response.status(200).json(result);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al registrar la descarga: ' + error });
