@@ -5,21 +5,21 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  rol: {
-    type: String,
-    required: true,
+  tamano: {
+    type: Number,
+    required: true
   },
-  username: {
+  fileId: {
     type: String,
-    required: true,
+    required: true
   },
-  passwordHash: {
+  enlace: {
     type: String,
     required: true
   }
 });
 
 /**
- * Modelo de entidad de un Usuario
+ * Modelo de entidad de un Archivo
  */
-export default mongoose.model("Usuario", schema, "Usuarios");
+export default mongoose.model("ConfArchivo", schema, "ConfArchivos");

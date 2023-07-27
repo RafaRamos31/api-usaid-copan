@@ -1,4 +1,5 @@
 import { eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks } from "../src/controllers/archivos-controller.js";
+import { getConfig } from "../src/controllers/config-controller.js";
 import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento } from "../src/controllers/departamentos-controller.js";
 import { addNoticia, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia } from "../src/controllers/noticias-controller.js";
 import { getUserById, login, register } from "../src/controllers/usuarios-controller.js";
@@ -262,6 +263,18 @@ export function addRestDirections(app) {
       response.json(user);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al validar la sesion actual: ' + error });
+    }
+  })
+
+  // * * *  CONFIGURACION  * * *
+
+  //Get Config
+  app.get("/api/config", async (request, response) => {
+    try {
+      const config = await getConfig();
+      response.json(config);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al recibir la configuracion del sitio: ' + error });
     }
   })
   
