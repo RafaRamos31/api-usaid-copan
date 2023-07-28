@@ -17,6 +17,31 @@ export async function getConfig() {
   return config;
 }
 
+
+export async function updateGeneralConfig(
+  {
+  titulo, subtitulo, departamento, 
+  nosotros, mensaje, autor, 
+  mision, vision, urlMapa
+  }
+) {
+
+  let config = await getConfig()
+
+  config.titulo = titulo
+  config.subtitulo = subtitulo
+  config.departamento = departamento
+  config.nosotros = nosotros
+  config.mensaje = mensaje
+  config.autor = autor
+  config.mision = mision
+  config.vision = vision
+  config.urlMapa = urlMapa
+
+  return config.save()
+}
+
+
 function createConfig() {
   const initConfig = new Configuracion({
     ref: 1,
