@@ -16,6 +16,10 @@ const schema = new mongoose.Schema({
   passwordHash: {
     type: String,
     required: true
+  },
+  firstLogin: {
+    type: Boolean,
+    required: true
   }
 });
 

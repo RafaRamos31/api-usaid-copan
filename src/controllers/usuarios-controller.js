@@ -28,7 +28,7 @@ export async function getUserById(userId){
 
 export async function login(username, password){
   
-  let user = await Usuario.findOne({nombre: username});
+  let user = await Usuario.findOne({username: username});
   if(!user || user.passwordHash !== hashPassword(password)){
     return ({
       valid: false
@@ -36,14 +36,18 @@ export async function login(username, password){
   }
   return ({
     valid: true,
-    id: user._id
+    id: user._id,
+    nombre: user.nombre,
+    rol: user.rol
   });
 }
 
-export async function register(username, password){
+export async function register(nombre, username, password){
   const user = new Usuario({
-    nombre: username,
+    nombre: nombre,
+    username: username,
     passwordHash: hashPassword(password),
+    firstLogin: true
   })
 
   user.save();

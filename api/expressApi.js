@@ -239,7 +239,7 @@ export function addRestDirections(app) {
   //POST login
   app.post("/api/login", upload.any(), async (request, response) => {
     try {
-      const user = await login(request.body.nombre, request.body.password);
+      const user = await login(request.body.username, request.body.password);
       response.json(user);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al iniciar sesion: ' + error });
@@ -249,7 +249,7 @@ export function addRestDirections(app) {
   //POST register
   app.post("/api/register", upload.any(), async (request, response) => {
     try {
-      const user = await register(request.body.nombre, request.body.password);
+      const user = await register(request.body.nombre, request.body.username, request.body.password);
       response.json(user._id);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al registrar al usuario: ' + error });
