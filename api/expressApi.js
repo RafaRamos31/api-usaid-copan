@@ -269,7 +269,7 @@ export function addRestDirections(app) {
   //POST register
   app.post("/api/register", upload.any(), async (request, response) => {
     try {
-      const user = await register(request.body.nombre, request.body.username);
+      const user = await register(request.body.nombre, request.body.username, request.body.rol, request.body.masterId);
       response.json(user);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al registrar al usuario: ' + error });

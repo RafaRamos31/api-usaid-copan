@@ -27,7 +27,7 @@ export async function getUserById(userId){
   //Actualizar conexion
   user.ultimaConexion = Date.now();
   user.save()
-  
+
   return ({
     valid: true,
     id: user._id,
@@ -54,13 +54,30 @@ export async function login(username, password){
   });
 }
 
-export async function register(nombre, username){
+async function confirmMaster(userId){
+  
+  let user = await Usuario.findOne({rol: 'Master'});
+
+  if(!user){
+    return false;
+  }
+
+  return userId === user._id;
+}
+
+export async function register(nombre, username, rol, masterId){
+  if(confirmMaster(masterId)){
+    return ({
+      valid: false
+    });
+  }
+  
   const codigo = generarCodigoAleatorio()
   const user = new Usuario({
     nombre: nombre,
     username: username,
     passwordHash: hashPassword(codigo),
-    rol: 'Admin',
+    rol: rol,
     firstLogin: true,
     ultimaConexion: Date.now()
   })
