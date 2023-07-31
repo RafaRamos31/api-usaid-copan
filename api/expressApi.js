@@ -2,7 +2,7 @@ import { eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarD
 import { getConfig, updateGeneralConfig } from "../src/controllers/config-controller.js";
 import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento } from "../src/controllers/departamentos-controller.js";
 import { addNoticia, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia } from "../src/controllers/noticias-controller.js";
-import { getUserById, login, register } from "../src/controllers/usuarios-controller.js";
+import { getUserById, getUsers, login, register, updatePassword } from "../src/controllers/usuarios-controller.js";
 import multer from "multer";
 
 /**
@@ -236,6 +236,16 @@ export function addRestDirections(app) {
 
   // * * *  USUARIOS  * * *
 
+  //GET allUsers
+  app.get("/api/admin/userlist", upload.any(), async (request, response) => {
+    try {
+      const users = await getUsers()
+      response.json(users);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al iniciar sesion: ' + error });
+    }
+  })
+
   //POST login
   app.post("/api/login", upload.any(), async (request, response) => {
     try {
@@ -246,11 +256,21 @@ export function addRestDirections(app) {
     }
   })
 
+  //POST cambiar contraseña
+  app.post("/api/setpassword", upload.any(), async (request, response) => {
+    try {
+      const user = await updatePassword(request.body.idUsuario, request.body.password);
+      response.json(user);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al cambiar clave de usuario: ' + error });
+    }
+  })
+
   //POST register
   app.post("/api/register", upload.any(), async (request, response) => {
     try {
-      const user = await register(request.body.nombre, request.body.username, request.body.password);
-      response.json(user._id);
+      const user = await register(request.body.nombre, request.body.username);
+      response.json(user);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al registrar al usuario: ' + error });
     }

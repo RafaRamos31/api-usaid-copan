@@ -9,7 +9,11 @@
 
 import Usuario from "../models/usuario.js";
 import { createHash } from 'crypto';
+import { generarCodigoAleatorio } from "../utilities/codeGenerator.js";
 
+export async function getUsers(){
+  return Usuario.find().select('-passwordHash');
+}
 
 export async function getUserById(userId){
   
@@ -19,6 +23,11 @@ export async function getUserById(userId){
       valid: false
     })
   }
+
+  //Actualizar conexion
+  user.ultimaConexion = Date.now();
+  user.save()
+  
   return ({
     valid: true,
     id: user._id,
@@ -45,18 +54,39 @@ export async function login(username, password){
   });
 }
 
-export async function register(nombre, username, password){
+export async function register(nombre, username){
+  const codigo = generarCodigoAleatorio()
   const user = new Usuario({
     nombre: nombre,
     username: username,
-    passwordHash: hashPassword(password),
-    firstLogin: true
+    passwordHash: hashPassword(codigo),
+    rol: 'Admin',
+    firstLogin: true,
+    ultimaConexion: Date.now()
   })
 
   user.save();
   return ({
     valid: true,
-    id: user._id
+    codigo: codigo,
+    id: user._id,
+    username: user.username,
+    nombre: user.nombre,
+  });
+}
+
+export async function updatePassword(idUsuario, password){
+  const user = await Usuario.findById(idUsuario);
+
+  user.passwordHash = hashPassword(password)
+  user.firstLogin = false
+
+  user.save();
+  return ({
+    valid: true,
+    id: user._id,
+    username: user.username,
+    nombre: user.nombre,
   });
 }
 

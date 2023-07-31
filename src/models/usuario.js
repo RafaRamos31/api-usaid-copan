@@ -20,6 +20,9 @@ const schema = new mongoose.Schema({
   firstLogin: {
     type: Boolean,
     required: true
+  },
+  ultimaConexion: {
+    type: String
   }
 });
 
