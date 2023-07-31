@@ -66,7 +66,7 @@ async function confirmMaster(userId){
 }
 
 export async function register(nombre, username, rol, masterId){
-  if(confirmMaster(masterId)){
+  if(await confirmMaster(masterId)){
     return ({
       valid: false
     });
@@ -82,7 +82,13 @@ export async function register(nombre, username, rol, masterId){
     ultimaConexion: Date.now()
   })
 
-  user.save();
+  try{
+    await user.save()
+  }
+  catch (error) {
+    return error
+  }
+
   return ({
     valid: true,
     codigo: codigo,
