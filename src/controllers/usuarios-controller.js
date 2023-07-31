@@ -22,7 +22,8 @@ export async function getUserById(userId){
   return ({
     valid: true,
     id: user._id,
-    name: user.nombre
+    name: user.nombre,
+    rol: user.rol
   });
 }
 
@@ -38,7 +39,8 @@ export async function login(username, password){
     valid: true,
     id: user._id,
     nombre: user.nombre,
-    rol: user.rol
+    rol: user.rol,
+    firstLogin: user.firstLogin
   });
 }
 
