@@ -50,7 +50,10 @@ export async function subirChunks(id, data, start, end, totalSize, actual, total
  */
 export async function getArchivos(index = 1, type = undefined){
   const queryFilter = type ? {tipo: type} : {};
-  return Archivo.find(queryFilter).skip((index-1)*15).limit(15);
+  if(type === 'Documento'){
+    return Archivo.find(queryFilter).skip((index-1)*6).limit(6);
+  }
+  return Archivo.find(queryFilter).skip((index-1)*9).limit(9);
 }
 
 /**
