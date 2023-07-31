@@ -23,7 +23,8 @@ export async function getUserById(userId){
     valid: true,
     id: user._id,
     name: user.nombre,
-    rol: user.rol
+    rol: user.rol,
+    firstLogin: user.firstLogin
   });
 }
 
