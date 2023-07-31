@@ -156,9 +156,9 @@ export function addRestDirections(app) {
   })
 
   //GET countArchivos
-  app.get("/api/countArchivos", upload.any(), async (request, response) => {
+  app.get("/api/countArchivos/:type", upload.any(), async (request, response) => {
     try {
-      const archivos = await getCountArchivos(request.body.type);
+      const archivos = await getCountArchivos(request.params.type);
       response.json(archivos);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los archivos: ' + error });
