@@ -22,6 +22,14 @@ export async function getNoticias(index = 1, idDepartamento = undefined){
   return Noticia.find(queryFilter).sort({ _id: -1 }).skip((index-1)*5).limit(5).populate("departamento").populate("archivos");
 }
 
+export async function queryNoticias(query){
+  const regexQuery = new RegExp(query, 'i');
+  const result = await Noticia.find({
+    contenido: regexQuery
+  }).populate("departamento").populate("archivos")
+  return result;
+}
+
 
 export async function getNoticiaById(idNoticia){
   return Noticia.findById(idNoticia).populate("departamento").populate("archivos").catch((error) => throwInvalidIDError("Noticia", error.message));

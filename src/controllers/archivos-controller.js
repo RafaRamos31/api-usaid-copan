@@ -73,6 +73,15 @@ export async function getCountArchivos(type = undefined){
 }
 
 
+export async function queryArchivos(query){
+  const regexQuery = new RegExp(query, 'i');
+  const result = await Archivo.find({
+    nombre: regexQuery
+  })
+  return result;
+}
+
+
 export async function sumarDescarga(idArchivo){
   const archivo = await getArchivoById(idArchivo);
   if(!archivo) return throwNotFoundException("Archivo");

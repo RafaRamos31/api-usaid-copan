@@ -1,7 +1,7 @@
-import { eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks } from "../src/controllers/archivos-controller.js";
+import { eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks, queryArchivos } from "../src/controllers/archivos-controller.js";
 import { getConfig, updateGeneralConfig } from "../src/controllers/config-controller.js";
 import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento } from "../src/controllers/departamentos-controller.js";
-import { addNoticia, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia } from "../src/controllers/noticias-controller.js";
+import { addNoticia, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia, queryNoticias } from "../src/controllers/noticias-controller.js";
 import { getUserById, getUsers, login, register, updatePassword } from "../src/controllers/usuarios-controller.js";
 import multer from "multer";
 
@@ -89,6 +89,18 @@ export function addRestDirections(app) {
     }
   });
 
+
+  //GET noticias Query
+  app.get("/api/noticiasQuery", upload.any(), async (request, response) => {
+    try {
+      const noticias = await queryNoticias(request.body.query);
+      response.json(noticias);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener las noticias: ' + error });
+    }
+  });
+
+
   //GET countNoticias
   app.get("/api/countnoticias/:idDepartamento?", async (request, response) => {
     try {
@@ -154,6 +166,17 @@ export function addRestDirections(app) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los archivos: ' + error });
     }
   })
+
+  //GET queryArchivos
+  app.get("/api/query", upload.any(), async (request, response) => {
+    try {
+      const archivos = await queryArchivos(request.body.query)
+      response.status(200).json(archivos);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los archivos: ' + error });
+    }
+  });
+
 
   //GET countArchivos
   app.get("/api/countArchivos/:type", upload.any(), async (request, response) => {
