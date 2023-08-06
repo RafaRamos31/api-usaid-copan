@@ -91,7 +91,7 @@ export function addRestDirections(app) {
 
 
   //GET noticias Query
-  app.get("/api/noticiasQuery", upload.any(), async (request, response) => {
+  app.post("/api/noticiasQuery", upload.any(), async (request, response) => {
     try {
       const noticias = await queryNoticias(request.body.query);
       response.json(noticias);
@@ -168,7 +168,7 @@ export function addRestDirections(app) {
   })
 
   //GET queryArchivos
-  app.get("/api/query", upload.any(), async (request, response) => {
+  app.post("/api/query", upload.any(), async (request, response) => {
     try {
       const archivos = await queryArchivos(request.body.query)
       response.status(200).json(archivos);
