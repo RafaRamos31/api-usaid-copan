@@ -1,4 +1,4 @@
-import { eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks, queryArchivos } from "../src/controllers/archivos-controller.js";
+import { eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks, queryArchivos, modificarArchivo } from "../src/controllers/archivos-controller.js";
 import { getConfig, updateGeneralConfig } from "../src/controllers/config-controller.js";
 import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento } from "../src/controllers/departamentos-controller.js";
 import { addNoticia, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia, queryNoticias } from "../src/controllers/noticias-controller.js";
@@ -236,12 +236,22 @@ export function addRestDirections(app) {
   });
 
   //PUT aumentar descarga
-  app.put("/api/archivos/:id?", upload.any(), async (request, response) => {
+  app.put("/api/archivos/:id", upload.any(), async (request, response) => {
     try {
       const result = await sumarDescarga(request.params.id)
       response.status(200).json(result);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al registrar la descarga: ' + error });
+    }
+  });
+
+  //PUT aumentar descarga
+  app.put("/api/archivos", upload.any(), async (request, response) => {
+    try {
+      const result = await modificarArchivo(request.body.idArchivo, request.body.nombre)
+      response.status(200).json(result);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al modificar el archivo: ' + error });
     }
   });
 

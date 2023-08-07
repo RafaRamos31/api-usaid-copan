@@ -91,6 +91,15 @@ export async function sumarDescarga(idArchivo){
 }
 
 
+export async function modificarArchivo(idArchivo, nombre){
+  const archivo = await getArchivoById(idArchivo);
+  if(!archivo) return throwNotFoundException("Archivo");
+
+  archivo.nombre = nombre;
+  return archivo.save();
+}
+
+
 export async function eliminarArchivo(idArchivo){
   const archivo = await getArchivoById(idArchivo);
   if(!archivo) return throwNotFoundException("Archivo");
