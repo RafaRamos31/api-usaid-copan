@@ -133,7 +133,7 @@ export function addRestDirections(app) {
   //PUT modificar noticias
   app.put("/api/noticias", upload.any(), async (request, response) => {
     try {
-      const result = await modificarNoticia(request.body.idNoticia)
+      const result = await modificarNoticia(request.body.idNoticia, request.body.departamento, request.body.contenido)
       response.status(200).json(result);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al modificar noticia: ' + error });

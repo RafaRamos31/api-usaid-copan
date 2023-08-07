@@ -73,11 +73,12 @@ export async function addNoticia({deptoId, contenido, stringArchivos}){
   return noticia.save();
 }
 
-export async function modificarNoticia(idNoticia, contenido=null){
+export async function modificarNoticia(idNoticia, departamento, contenido=null){
   const noticia = await getNoticiaById(idNoticia);
   if(!noticia) return throwNotFoundException("Noticia");
 
-  if(contenido) noticia.contenido = contenido;
+  noticia.contenido = contenido;
+  noticia.departamento = departamento;
 
   return noticia.save();
 }
