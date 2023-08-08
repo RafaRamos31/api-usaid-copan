@@ -1,4 +1,4 @@
-import { eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks, queryArchivos } from "../src/controllers/archivos-controller.js";
+import { eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks, queryArchivos, modificarArchivo } from "../src/controllers/archivos-controller.js";
 import { getConfig, updateGeneralConfig } from "../src/controllers/config-controller.js";
 import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento } from "../src/controllers/departamentos-controller.js";
 import { sendMail } from "../src/controllers/mail-controller.js";
@@ -110,7 +110,7 @@ export function addRestDirections(app) {
 
 
   //GET noticias Query
-  app.get("/api/noticiasQuery", upload.any(), async (request, response) => {
+  app.post("/api/noticiasQuery", upload.any(), async (request, response) => {
     try {
       const noticias = await queryNoticias(request.body.query);
       response.json(noticias);
@@ -152,7 +152,7 @@ export function addRestDirections(app) {
   //PUT modificar noticias
   app.put("/api/noticias", upload.any(), async (request, response) => {
     try {
-      const result = await modificarNoticia(request.body.idNoticia)
+      const result = await modificarNoticia(request.body.idNoticia, request.body.departamento, request.body.contenido)
       response.status(200).json(result);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al modificar noticia: ' + error });
@@ -187,7 +187,7 @@ export function addRestDirections(app) {
   })
 
   //GET queryArchivos
-  app.get("/api/query", upload.any(), async (request, response) => {
+  app.post("/api/query", upload.any(), async (request, response) => {
     try {
       const archivos = await queryArchivos(request.body.query)
       response.status(200).json(archivos);
@@ -255,12 +255,22 @@ export function addRestDirections(app) {
   });
 
   //PUT aumentar descarga
-  app.put("/api/archivos/:id?", upload.any(), async (request, response) => {
+  app.put("/api/archivos/:id", upload.any(), async (request, response) => {
     try {
       const result = await sumarDescarga(request.params.id)
       response.status(200).json(result);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al registrar la descarga: ' + error });
+    }
+  });
+
+  //PUT aumentar descarga
+  app.put("/api/archivos", upload.any(), async (request, response) => {
+    try {
+      const result = await modificarArchivo(request.body.idArchivo, request.body.nombre)
+      response.status(200).json(result);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al modificar el archivo: ' + error });
     }
   });
 

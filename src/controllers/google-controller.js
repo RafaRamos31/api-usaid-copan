@@ -31,8 +31,9 @@ export const createEmptyFile = async (name, type) => {
   //Se crea el archivo usando las credenciales de Google Drive y el stream de bytes que componen el archivo.
   const { data } = await google.drive({ version: "v3", auth }).files.create({
     media: {
-      mimeType: type
+      mimeType: type,
     },
+    resumable: true,
     requestBody: {
       //Se define que el archivo conserve su nombre original
       name: name,
@@ -40,7 +41,7 @@ export const createEmptyFile = async (name, type) => {
       parents: [process.env.GOOGLE_FOLDER_ID],
     },
     fields: "id,name",
-  });
+  },);
   
   //Genera una URL valida en base al ID generado por el archivo guardado
   return data.id;
@@ -51,7 +52,7 @@ export const updateChunk = async (fileId, chunk, start, end, fileSize) => {
   const bufferStream = new stream.PassThrough();
   bufferStream.end(chunk.buffer);
 
-  const range = end != fileSize ? `bytes ${start}-${end - 1}/${fileSize}` : `bytes ${start}-${end}/${fileSize}`;
+  const range = `bytes ${start}-${end - 1}`;
   
   //Se crea el archivo usando las credenciales de Google Drive y el stream de bytes que componen el archivo.
   await google.drive({ version: "v3", auth }).files.update({
