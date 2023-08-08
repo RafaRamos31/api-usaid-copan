@@ -18,7 +18,7 @@ export function addRestDirections(app) {
   //POST Correo
   app.post("/api/mail", upload.any(), async (request, response) => {
     try {
-      const result = sendMail(
+      const result = await sendMail(
         request.body.nombre,
         request.body.apellido,
         request.body.municipio,

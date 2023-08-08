@@ -1,7 +1,7 @@
 
 import nodemailer from 'nodemailer'
 
-export const sendMail = (nombre, apellido, municipio, comunidad, correo, telefono, asunto) => {
+export const sendMail = async (nombre, apellido, municipio, comunidad, correo, telefono, asunto) => {
 
   // Configura el transporte del correo electrónico (Gmail en este ejemplo)
   const transporter = nodemailer.createTransport({
@@ -19,12 +19,6 @@ export const sendMail = (nombre, apellido, municipio, comunidad, correo, telefon
     text: `${asunto}. \n ${nombre + ' ' + apellido} \n Municipio: ${municipio} \n Comunidad: ${comunidad} \n Correo electronico: ${correo} \n Teléfono: ${telefono}`,
   };
 
-  // Envía el correo electrónico
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error('Error al enviar el correo electrónico:', error);
-    } else {
-      return(info.response);
-    }
-  });
+  const response = await transporter.sendMail(mailOptions)
+  return response;
 }
