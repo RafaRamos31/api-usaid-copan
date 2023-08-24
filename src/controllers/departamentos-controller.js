@@ -1,59 +1,40 @@
-/**
- * Archivo para definir metodos de acceso a la base de datos de MongoDB
- * Para manipular los registros de la coleccion de Departamentos
- *
- * Autor: USAID - Proyecto Avanzando por la Salud de Honduras
- * Fecha: Junio 2023
- * Versión: 1.0.0
- */
-import Departamento from "../models/departamento.js";
-import { throwInvalidArgsError, throwInvalidIDError, throwNotFoundException } from "../utilities/errorHandler.js";
+import Departamento from "../models/departamentos.js";
 
-/**
- * Obtiene de la base de datos la lista de todos los departamentos o secciones de la regional
- * @returns Un arreglo con todos los departamento de la BD
- */
 export async function getAllDepartamentos(){
-  return Departamento.find();
+  return Departamento.find().sort({ geocode: 1 });
 }
 
-/**
- * Busca en la base de datos por un departamento en especifico y devuelve su informacion
- * @param {string} idDepartamento el ID unico del departamento del cual se requiere informacion
- * @returns un documento JSON con la informacion del departamento seleccionado
- */
 export async function getDepartamentoById(idDepartamento){
-  return Departamento.findById(idDepartamento).catch((error) => throwInvalidIDError("Departamento", error.message));
+  try {
+    const departamento = await Departamento.findById(idDepartamento);
+    return departamento;
+  } catch (error) {
+    throw error;
+  }
 }
 
-/**
- * Obtiene de la base de datos la lista de todos los departamentos o secciones de la regional
- * @returns Un arreglo con todos los departamento de la BD
- */
-export async function crearDepartamento({nombre, urlLogo}){
+export async function createDepartamento(nombre, geocode){
   const departamento = new Departamento({
-    nombre, 
-    urlLogo
-  });
+    nombre,
+    geocode
+  })
 
-  return departamento.save().catch((error) => throwInvalidArgsError(error.message));
+  return departamento.save();
 }
 
-
-export async function modificarDepartamento({idDepartamento, nombre, urlLogo}){
+export async function editDepartamento(idDepartamento, nombre, geocode){
   const departamento = await getDepartamentoById(idDepartamento);
-  if(!departamento) return throwNotFoundException("Departamento");
+  if(!departamento) return null;
 
   departamento.nombre = nombre;
-  departamento.urlLogo = urlLogo;
+  departamento.geocode = geocode;
 
-  return departamento.save().catch((error) => throwInvalidArgsError(error.message));
+  return departamento.save();
 }
 
-
-export async function eliminarDepartamento({idDepartamento}){
-  const departamento = await getDepartamentoById(idDepartamento);
-  if(!departamento) return throwNotFoundException("Departamento");
+export async function deleteDepartamento(ideDepartamento){
+  const departamento = await getDepartamentoById(ideDepartamento);
+  if(!departamento) return null;
 
   return departamento.delete();
 }

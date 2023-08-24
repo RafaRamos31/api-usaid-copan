@@ -4,15 +4,15 @@ const schema = new mongoose.Schema({
   nombre: {
     type: String,
     required: true,
-    minlength: 3,
   },
-  urlLogo: {
+  geocode: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   }
 });
 
 /**
- * Modelo de entidad de un Departamento
+ * Modelo de entidad de un Componente
  */
 export default mongoose.model("Departamento", schema, "Departamentos");
