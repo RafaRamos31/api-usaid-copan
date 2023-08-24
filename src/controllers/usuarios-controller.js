@@ -1,105 +1,117 @@
+/**
+ * Archivo para definir metodos de acceso a la base de datos de MongoDB
+ * Para manipular los registros de la coleccion de Usuarios
+ *
+ * Autor: USAID - Proyecto Avanzando por la Salud de Honduras
+ * Fecha: Junio 2023
+ * Versión: 1.0.0
+ */
+
+import Usuario from "../models/usuario.js";
 import { createHash } from 'crypto';
-import Usuario from "../models/usuarios.js";
-import { getCargoById } from "./cargos-controller.js";
-import { getComponentById } from "./componentes-controller.js";
-import { getOrganizacionById } from "./organizaciones-controller.js";
-import { getRolById } from "./roles-controller.js";
+import { generarCodigoAleatorio } from "../utilities/codeGenerator.js";
 
-export async function getUsuarios(organizacion=null, cargo=null, componente=null, rol=null){
-  try {
-
-    let filter = {}
-
-    if(organizacion){
-      filter = {...filter, organizacion: {_id: organizacion}}
-    }
-
-    if(cargo){
-      filter = {...filter, cargo: cargo}
-    }
-
-    if(componente){
-      filter = {...filter, componente: {_id: componente}}
-    }
-
-    if(rol){
-      filter = {...filter, rol: {_id: rol}}
-    }
-
-    const usuarios = await Usuario.find(filter, '-password').populate(['organizacion', 
-    'cargo', 'componente', 'rol']);
-    return usuarios;
-  } catch (error) {
-    throw error;
-  }
+export async function getUsers(){
+  return Usuario.find().select('-passwordHash');
 }
 
-export async function getUsuarioById(idUsuario){
-  try {
-    const usuario = await Usuario.findById(idUsuario, '-password').populate(['organizacion', 
-    'cargo', 'componente', 'rol']);
-    return usuario;
-  } catch (error) {
-    throw error;
+export async function getUserById(userId){
+  
+  let user = await Usuario.findById(userId);
+  if(!user){
+    return ({
+      valid: false
+    })
   }
+
+  //Actualizar conexion
+  user.ultimaConexion = Date.now();
+  user.save()
+
+  return ({
+    valid: true,
+    id: user._id,
+    name: user.nombre,
+    rol: user.rol,
+    firstLogin: user.firstLogin
+  });
 }
 
-export async function createUsuario(nombre, sexo, idOrganizacion, idCargo, idComponente, idRol,
-  correo, password){
+export async function login(username, password){
+  
+  let user = await Usuario.findOne({username: username});
+  if(!user || user.passwordHash !== hashPassword(password)){
+    return ({
+      valid: false
+    })
+  }
+  return ({
+    valid: true,
+    id: user._id,
+    nombre: user.nombre,
+    rol: user.rol,
+    firstLogin: user.firstLogin
+  });
+}
 
-  const promises = await Promise.all([
-    getOrganizacionById(idOrganizacion),
-    getCargoById(idCargo),
-    getComponentById(idComponente),
-    getRolById(idRol)
-  ])
+async function confirmMaster(userId){
+  
+  let user = await Usuario.findOne({rol: 'Master'});
 
-  const usuario = new Usuario({
-    nombre,
-    sexo,
-    organizacion: promises[0],
-    cargo: promises[1],
-    componente: promises[2],
-    rol: promises[3],
-    correo,
-    password: hashPassword(password)
+  if(!user){
+    return false;
+  }
+
+  return userId === user._id;
+}
+
+export async function register(nombre, username, rol, masterId){
+  if(await confirmMaster(masterId)){
+    return ({
+      valid: false
+    });
+  }
+  
+  const codigo = generarCodigoAleatorio()
+  const user = new Usuario({
+    nombre: nombre,
+    username: username,
+    passwordHash: hashPassword(codigo),
+    rol: rol,
+    firstLogin: true,
+    ultimaConexion: Date.now()
   })
 
-  return usuario.save();
+  try{
+    await user.save()
+  }
+  catch (error) {
+    return error
+  }
+
+  return ({
+    valid: true,
+    codigo: codigo,
+    id: user._id,
+    username: user.username,
+    nombre: user.nombre,
+  });
 }
 
+export async function updatePassword(idUsuario, password){
+  const user = await Usuario.findById(idUsuario);
 
-export async function editUsuario(idUsuario, nombre, sexo, idOrganizacion, idCargo, idComponente, idRol,
-  correo){
+  user.passwordHash = hashPassword(password)
+  user.firstLogin = false
 
-  const usuario = await getUsuarioById(idUsuario);
-  if(!usuario) return null;
-
-  const promises = await Promise.all([
-    getOrganizacionById(idOrganizacion),
-    getCargoById(idCargo),
-    getComponentById(idComponente),
-    getRolById(idRol)
-  ])
-
-  usuario.nombre = nombre;
-  usuario.sexo = sexo;
-  usuario.organizacion = promises[0];
-  usuario.cargo = promises[1];
-  usuario.componente = promises[2];
-  usuario.rol = promises[3];
-  usuario.correo = correo;
-
-  return usuario.save();
+  user.save();
+  return ({
+    valid: true,
+    id: user._id,
+    username: user.username,
+    nombre: user.nombre,
+  });
 }
-
-export async function deleteUsuario(idUsuario){
-  const usuario = await getUsuarioById(idUsuario);
-  if(!usuario) return null;
-
-  return usuario.delete();
-}
-
 
 function hashPassword(password) {
   return createHash("sha256").update(password).digest("hex");
