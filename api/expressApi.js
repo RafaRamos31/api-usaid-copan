@@ -1,6 +1,7 @@
 import { eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks, queryArchivos, modificarArchivo } from "../src/controllers/archivos-controller.js";
 import { getConfig, updateGeneralConfig } from "../src/controllers/config-controller.js";
 import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento } from "../src/controllers/departamentos-controller.js";
+import { sendMail } from "../src/controllers/mail-controller.js";
 import { addNoticia, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia, queryNoticias } from "../src/controllers/noticias-controller.js";
 import { getUserById, getUsers, login, register, updatePassword } from "../src/controllers/usuarios-controller.js";
 import multer from "multer";
@@ -13,6 +14,24 @@ import multer from "multer";
 export function addRestDirections(app) {
   //Middleware para la recepcion de archivos desde un formulario del Frontend
   const upload = new multer();
+
+  //POST Correo
+  app.post("/api/mail", upload.any(), async (request, response) => {
+    try {
+      const result = await sendMail(
+        request.body.nombre,
+        request.body.apellido,
+        request.body.municipio,
+        request.body.comunidad,
+        request.body.correo,
+        request.body.telefono,
+        request.body.asunto
+      )
+      response.json(result);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al enviar email: ' + error });
+    }
+  })
 
 
   // * * *  DEPARTAMENTOS  * * *
