@@ -20,7 +20,6 @@ export async function getConfig() {
 
 export async function updateGeneralConfig(
   {
-  titulo, subtitulo, departamento, 
   nosotros, mensaje, autor, 
   mision, vision, urlMapa
   }
@@ -28,9 +27,6 @@ export async function updateGeneralConfig(
 
   let config = await getConfig()
 
-  config.titulo = titulo
-  config.subtitulo = subtitulo
-  config.departamento = departamento
   config.nosotros = nosotros
   config.mensaje = mensaje
   config.autor = autor
@@ -45,9 +41,6 @@ export async function updateGeneralConfig(
 function createConfig() {
   const initConfig = new Configuracion({
     ref: 1,
-    titulo: "Titulo de la pagina",
-    subtitulo: "Subtitulo de la pagina",
-    departamento: 0,
     mensaje: "Mensaje de un representante de la region",
     autor: "Nombre y Cargo del representante",
     nosotros: "Texto de Seccion Sobre Nosotros de la pagina",
@@ -72,43 +65,6 @@ function createConfig() {
         descripcion: "Descripcion del Valor 4",
       },
     ],
-    enlaces: [
-      {
-        nombre: 'fondo',
-        fileId: '0',
-        imgUrl: '0'
-      },
-      {
-        nombre: 'nosotros',
-        fileId: '0',
-        imgUrl: '0'
-      },
-      {
-        nombre: 'representante',
-        fileId: '0',
-        imgUrl: '0'
-      },
-      {
-        nombre: 'mision',
-        fileId: '0',
-        imgUrl: '0'
-      },
-      {
-        nombre: 'vision',
-        fileId: '0',
-        imgUrl: '0'
-      },
-      {
-        nombre: 'valores',
-        fileId: '0',
-        imgUrl: '0'
-      },
-      {
-        nombre: 'organigrama',
-        fileId: '0',
-        imgUrl: '0'
-      }
-    ]
   });
 
   return initConfig.save();

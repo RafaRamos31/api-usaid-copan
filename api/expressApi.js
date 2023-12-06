@@ -337,9 +337,6 @@ export function addRestDirections(app) {
     try {
 
       const config = await updateGeneralConfig({
-        titulo: request.body.titulo,
-        subtitulo: request.body.subtitulo,
-        departamento: request.body.departamento,
         nosotros: request.body.nosotros,
         mensaje: request.body.mensaje,
         autor: request.body.autor,
