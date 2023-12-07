@@ -52,7 +52,7 @@ export async function getCountNoticias(idDepartamento){
  * Crea una nueva noticia con datos ingresados por el usuario, y la guarda en MongoDB
  * @returns 
  */
-export async function addNoticia({deptoId, contenido, stringArchivos}){
+export async function addNoticia({deptoId, municipio, contenido, stringArchivos}){
   //Se obtiene el objeto con la informacion sobre el departamento vinculado a la noticia a crear
   const departamento = await getDepartamentoById(deptoId);
   if(!departamento) return throwNotFoundException("Departamento");
@@ -63,6 +63,7 @@ export async function addNoticia({deptoId, contenido, stringArchivos}){
 
   const noticia = new Noticia({
     departamento, 
+    municipio,
     contenido,
     //Se define el momento actual para la creacion de la noticia
     fechaPublicacion: Date.now(),
@@ -73,12 +74,13 @@ export async function addNoticia({deptoId, contenido, stringArchivos}){
   return noticia.save();
 }
 
-export async function modificarNoticia(idNoticia, departamento, contenido=null){
+export async function modificarNoticia(idNoticia, departamento, municipio, contenido=null){
   const noticia = await getNoticiaById(idNoticia);
   if(!noticia) return throwNotFoundException("Noticia");
 
   noticia.contenido = contenido;
   noticia.departamento = departamento;
+  noticia.municipio = municipio;
 
   return noticia.save();
 }

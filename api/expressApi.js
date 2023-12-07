@@ -138,6 +138,7 @@ export function addRestDirections(app) {
       //Se crea un nuevo objeto de noticia y se envia a MongoDB
       const noticia = await addNoticia({
         deptoId: request.body.departamento, 
+        municipio: request.body.municipio, 
         contenido: request.body.contenido,
         stringArchivos: request.body.archivos
       });
@@ -153,7 +154,7 @@ export function addRestDirections(app) {
   //PUT modificar noticias
   app.put("/api/noticias", upload.any(), async (request, response) => {
     try {
-      const result = await modificarNoticia(request.body.idNoticia, request.body.departamento, request.body.contenido)
+      const result = await modificarNoticia(request.body.idNoticia, request.body.departamento, request.body.municipio, request.body.contenido)
       response.status(200).json(result);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al modificar noticia: ' + error });
