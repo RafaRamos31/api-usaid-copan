@@ -66,22 +66,25 @@ export async function getValoresConfig() {
 }
 
 
-export async function updateValoresConfig({valoresList}) {
+export async function updateValoresConfig({names, values}) {
 
   let config = await getValoresConfig();
 
+  let jsonNames = JSON.parse(names)
+  let jsonValues = JSON.parse(values)
   config.valores = []
 
-  valoresList.map((valor) => {
-    config.valores = [
-      ...config.valores,
+  for (var name in jsonNames) {
+    if (jsonNames.hasOwnProperty(name) && jsonValues.hasOwnProperty(jsonNames[name])) {
+      config.valores = 
+      [...config.valores,
       {
-        nombre: valor.split('-')[0],
-        descripcion: valor.split('-')[1]
+        nombre: jsonNames[name],
+        descripcion: jsonValues[jsonNames[name]],
       }
-    ]
-    return valor;
-  })
+    ] 
+    }
+  }
 
   return config.save()
 }
