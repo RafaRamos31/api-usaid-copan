@@ -1,4 +1,4 @@
-import { eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks, queryArchivos, modificarArchivo } from "../src/controllers/archivos-controller.js";
+import { eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks, queryArchivos, modificarArchivo, getOficios } from "../src/controllers/archivos-controller.js";
 import { getContactosConfig, getFooterConfig, getGeneralConfig, getValoresConfig, updateContactosConfig, updateFooterConfig, updateGeneralConfig, updateValoresConfig } from "../src/controllers/config-controller.js";
 import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento, populateUnidadesSalud } from "../src/controllers/departamentos-controller.js";
 import { sendMail } from "../src/controllers/mail-controller.js";
@@ -104,6 +104,17 @@ export function addRestDirections(app) {
       const municipio = request.body.municipio;
       const noticias = await getNoticias(index, idDepartamento, municipio);
       response.json(noticias);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener las noticias: ' + error });
+    }
+  });
+
+  //GET noticias Oficios
+  app.get("/api/noticias/oficios/:year?", upload.any(), async (request, response) => {
+    try {
+      const year = request.params.year
+      const oficios = await getOficios(year);
+      response.json(oficios);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener las noticias: ' + error });
     }

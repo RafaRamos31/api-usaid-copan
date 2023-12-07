@@ -174,3 +174,7 @@ export function determinarTipoArchivo(nombreArchivo){
   //Si se envia un archivo no vacio, pero que no tiene ningun de las extensiones permitidas
   return null;
 }
+
+export const getOficios = (year) => {
+  return Archivo.find({categoria: 'Oficio'})
+}
