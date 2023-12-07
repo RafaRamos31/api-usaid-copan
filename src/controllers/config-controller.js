@@ -66,9 +66,9 @@ export async function getValoresConfig() {
 }
 
 
-export async function updateValoresConfig({valoresList}) {
+export async function updateValoresConfig({names, values}) {
 
-  let config = await getValoresConfig()
+  let config = await getValoresConfig();
 
   config.valores = [
     {
@@ -81,7 +81,8 @@ export async function updateValoresConfig({valoresList}) {
     }
   ]
 
-  return config.save()
+  //return config.save()
+  return {names, values}
 }
 
 
