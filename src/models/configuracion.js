@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const schema = new mongoose.Schema({
   ref: {
-    type: Number,
+    type: 'string',
     required: true,
   }
 });
