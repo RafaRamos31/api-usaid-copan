@@ -1,5 +1,5 @@
 import { eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks, queryArchivos, modificarArchivo } from "../src/controllers/archivos-controller.js";
-import { getConfig, updateGeneralConfig } from "../src/controllers/config-controller.js";
+import { getFooterConfig, getGeneralConfig, getValoresConfig, updateFooterConfig, updateGeneralConfig, updateValoresConfig } from "../src/controllers/config-controller.js";
 import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento } from "../src/controllers/departamentos-controller.js";
 import { sendMail } from "../src/controllers/mail-controller.js";
 import { addNoticia, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia, queryNoticias } from "../src/controllers/noticias-controller.js";
@@ -340,10 +340,10 @@ export function addRestDirections(app) {
 
   // * * *  CONFIGURACION  * * *
 
-  //Get Config
-  app.get("/api/config", async (request, response) => {
+  //Get Config General
+  app.get("/api/config/general", async (request, response) => {
     try {
-      const config = await getConfig();
+      const config = await getGeneralConfig();
       response.json(config);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al recibir la configuracion del sitio: ' + error });
@@ -351,7 +351,7 @@ export function addRestDirections(app) {
   })
 
 
-  //Get Config
+  //Update Config General
   app.put("/api/config/general", upload.any(), async (request, response) => {
     try {
 
@@ -368,6 +368,42 @@ export function addRestDirections(app) {
       response.status(500).json({ error: 'Ocurrió un error al actualizar la configuracion del sitio: ' + error });
     }
   })
+
+  //Get Config Valores
+  app.get("/api/config/valores", async (request, response) => {
+    try {
+      const config = await getValoresConfig();
+      response.json(config);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al recibir la configuracion del sitio: ' + error });
+    }
+  })
+
+
+  //Update Config Valores
+  app.put("/api/config/valores", upload.any(), async (request, response) => {
+    try {
+
+      const config = await updateValoresConfig({
+        valoresList: request.body.valores
+      })
+      response.json(config);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al actualizar la configuracion del sitio: ' + error });
+    }
+  })
+
+  //Get Config Footer
+  app.get("/api/config/footer", async (request, response) => {
+    try {
+      const config = await getFooterConfig();
+      response.json(config);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al recibir la configuracion del sitio: ' + error });
+    }
+  })
   
   return app;
 }
+
+

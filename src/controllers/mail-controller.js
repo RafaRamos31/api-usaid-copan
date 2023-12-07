@@ -14,7 +14,7 @@ export const sendMail = async (nombre, apellido, municipio, comunidad, correo, t
 
   const mailOptions = {
     from: process.env.GOOGLE_MAIL, // Remitente (debe ser la misma cuenta que se usa para el transporte)
-    to: process.env.GOOGLE_MAIL, // Destinatario
+    to: process.env.RECEPTOR_MAIL, // Destinatario
     subject: 'Correo de la Pagina Web: ' + nombre,
     text: `${asunto}. \n ${nombre + ' ' + apellido} \n Municipio: ${municipio} \n Comunidad: ${comunidad} \n Correo electronico: ${correo} \n Teléfono: ${telefono}`,
   };
