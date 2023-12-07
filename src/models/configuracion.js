@@ -17,9 +17,19 @@ const red = new mongoose.Schema({
     type: Boolean,
   },
   enlace: {
-    type: 'string',
+    type: String,
   },
 })
+
+const contacto = new mongoose.Schema({
+  name: {
+    type: String,
+  },
+  referencias: [{
+    type: String,
+  }],
+})
+
 
 
 const schema = new mongoose.Schema({
@@ -65,6 +75,9 @@ const schema = new mongoose.Schema({
   },
   footerRedes: [{
     type: red,
+  }],
+  contactos: [{
+    type: contacto,
   }],
 });
 

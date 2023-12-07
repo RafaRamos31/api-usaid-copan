@@ -1,5 +1,5 @@
 import { eliminarArchivo, getArchivos, getCountArchivos, publicarArchivo, sumarDescarga, crearArchivoChunk, subirChunks, queryArchivos, modificarArchivo } from "../src/controllers/archivos-controller.js";
-import { getFooterConfig, getGeneralConfig, getValoresConfig, updateFooterConfig, updateGeneralConfig, updateValoresConfig } from "../src/controllers/config-controller.js";
+import { getContactosConfig, getFooterConfig, getGeneralConfig, getValoresConfig, updateFooterConfig, updateGeneralConfig, updateValoresConfig } from "../src/controllers/config-controller.js";
 import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento } from "../src/controllers/departamentos-controller.js";
 import { sendMail } from "../src/controllers/mail-controller.js";
 import { addNoticia, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia, queryNoticias } from "../src/controllers/noticias-controller.js";
@@ -419,6 +419,17 @@ export function addRestDirections(app) {
       response.json(config);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al actualizar la configuracion del sitio: ' + error });
+    }
+  })
+
+
+  //Get Config Contactos
+  app.get("/api/config/contactos", async (request, response) => {
+    try {
+      const config = await getContactosConfig();
+      response.json(config);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al recibir la configuracion del sitio: ' + error });
     }
   })
   
