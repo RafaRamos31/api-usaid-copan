@@ -72,18 +72,19 @@ export async function updateValoresConfig({names, values}) {
 
   let jsonNames = JSON.parse(names)
   let jsonValues = JSON.parse(values)
-  config.valores = []
 
-  for(let i=0; i<jsonNames.length; i++){
-    config.valores = [
-      ...config.valores,
+  let newValores = []
+
+  for(let i=0; i<Object.keys(jsonNames).length; i++){
+    newValores = [...newValores, 
       {
         nombre: jsonNames[`name-${i}`],
         descripcion: jsonValues[`desc-${i}`],
       }
-    ] 
+    ]
   }
-  
+  config.valores = newValores
+
   return config.save()
 }
 
@@ -126,21 +127,21 @@ export async function getFooterConfig() {
 }
 
 
-export async function updateFooterConfig({valoresList}) {
+export async function updateFooterConfig({
+  footerCorreo, footerDireccion, footerTelefonos, 
+  footerDesc, footerEnlace, footerRedes
+  }
+) {
 
   let config = await getFooterConfig()
 
-  config.valores = [
-    {
-      nombre: "Valor 1",
-      descripcion: "Descripcion del Valor 1",
-    },
-    {
-      nombre: "Valor 2",
-      descripcion: "Descripcion del Valor 2",
-    }
-  ]
-
+  config.footerCorreo = footerCorreo
+  config.footerDireccion = footerDireccion
+  config.footerTelefonos = footerTelefonos
+  config.footerDesc = footerDesc
+  config.footerEnlace = footerEnlace
+  config.footerRedes = JSON.parse(footerRedes)
+  
   return config.save()
 }
 
@@ -151,7 +152,7 @@ function createFooterConfig() {
     footerCorreo: 'correo@server.com',
     footerDireccion: 'Direccion',
     footerTelefonos: '9999-1111 / 8888-0000',
-    footerDesc: 'Descripcion resumidad de la pagina',
+    footerDesc: 'Descripcion resumida de la pagina',
     footerEnlace: '',
     footerRedes: [
       {
