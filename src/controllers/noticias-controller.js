@@ -24,8 +24,7 @@ export async function getNoticias(index = 1, idDepartamento = null, municipio = 
 
   if(municipio !== null && municipio.length>0) queryFilter = {...queryFilter, municipio: municipio}
 
-  //return Noticia.find(queryFilter).sort({ _id: -1 }).skip((index-1)*5).limit(5).populate("departamento").populate("archivos");
-  return {index, idDepartamento, municipio}
+  return Noticia.find(queryFilter).sort({ _id: -1 }).skip((index-1)*5).limit(5).populate("departamento").populate("archivos");
 }
 
 export async function queryNoticias(query){
