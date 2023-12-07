@@ -385,8 +385,7 @@ export function addRestDirections(app) {
     try {
 
       const config = await updateValoresConfig({
-        names: request.body.names,
-        values: request.body.values,
+        valoresList: request.body.valoresList
       })
       response.json(config);
     } catch (error) {

@@ -66,23 +66,24 @@ export async function getValoresConfig() {
 }
 
 
-export async function updateValoresConfig({names, values}) {
+export async function updateValoresConfig({valoresList}) {
 
   let config = await getValoresConfig();
 
-  config.valores = [
-    {
-      nombre: "Valor 1",
-      descripcion: "Descripcion del Valor 1",
-    },
-    {
-      nombre: "Valor 2",
-      descripcion: "Descripcion del Valor 2",
-    }
-  ]
+  config.valores = []
 
-  //return config.save()
-  return {names: [...names], values: [...values]}
+  valoresList.map((valor) => {
+    config.valores = [
+      ...config.valores,
+      {
+        nombre: valor.split('-')[0],
+        descripcion: valor.split('-')[1]
+      }
+    ]
+    return valor;
+  })
+
+  return config.save()
 }
 
 
