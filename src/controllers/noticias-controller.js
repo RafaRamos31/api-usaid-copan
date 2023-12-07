@@ -20,9 +20,9 @@ import { getDepartamentoById } from "./departamentos-controller.js";
 export async function getNoticias(index = 1, idDepartamento = null, municipio = null){
   let queryFilter = {}
   
-  if(idDepartamento) queryFilter = {departamento: {_id: idDepartamento}}
+  if(idDepartamento !== null && idDepartamento.length>0) queryFilter = {departamento: {_id: idDepartamento}}
   
-  if(municipio) queryFilter = {...queryFilter, municipio: municipio}
+  if(municipio !== null && municipio.length>0) queryFilter = {...queryFilter, municipio: municipio}
 
   return Noticia.find(queryFilter).sort({ _id: -1 }).skip((index-1)*5).limit(5).populate("departamento").populate("archivos");
 }
