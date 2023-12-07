@@ -82,7 +82,7 @@ export async function updateValoresConfig({names, values}) {
   ]
 
   //return config.save()
-  return {names, values}
+  return {names: [...names], values: [...values]}
 }
 
 
