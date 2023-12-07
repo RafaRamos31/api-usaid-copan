@@ -74,18 +74,16 @@ export async function updateValoresConfig({names, values}) {
   let jsonValues = JSON.parse(values)
   config.valores = []
 
-  for (var name in jsonNames) {
-    if (jsonNames.hasOwnProperty(name) && jsonValues.hasOwnProperty(jsonNames[name])) {
-      config.valores = 
-      [...config.valores,
+  for(let i=0; i<jsonNames.length; i++){
+    config.valores = [
+      ...config.valores,
       {
-        nombre: jsonNames[name],
-        descripcion: jsonValues[jsonNames[name]],
+        nombre: jsonNames[`name-${i}`],
+        descripcion: jsonValues[`desc-${i}`],
       }
     ] 
-    }
   }
-
+  
   return config.save()
 }
 
