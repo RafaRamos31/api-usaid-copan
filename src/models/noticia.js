@@ -6,6 +6,10 @@ const schema = new mongoose.Schema({
     ref: "Departamento",
     required: true,
   },
+  municipio: {
+    type: String,
+    required: true,
+  },
   fechaPublicacion: {
     type: String,
     required: true,

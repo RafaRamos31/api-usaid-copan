@@ -198,21 +198,12 @@ export async function getContactosConfig() {
 }
 
 
-export async function updateContactosConfig({valoresList}) {
+export async function updateContactosConfig({contactos}) {
 
   let config = await getContactosConfig()
 
-  config.valores = [
-    {
-      nombre: "Valor 1",
-      descripcion: "Descripcion del Valor 1",
-    },
-    {
-      nombre: "Valor 2",
-      descripcion: "Descripcion del Valor 2",
-    }
-  ]
-
+  config.contactos = JSON.parse(contactos)
+  
   return config.save()
 }
 

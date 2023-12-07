@@ -57,3 +57,27 @@ export async function eliminarDepartamento({idDepartamento}){
 
   return departamento.delete();
 }
+
+
+export async function populateUnidadesSalud(){
+  const unidades = [
+    { nombre: 'Dirección General de Normalización'},
+    { nombre: 'Unidad de Vigilancia de la Salud'},
+    { nombre: 'Programa Ampliado de Inmunización PAI'},
+    { nombre: 'Unidad de Comunicación Institucional'},
+    { nombre: 'Comité de Control Interno Institucional'},
+    { nombre: 'Unidad Administradora de Fondos de Cooperación Externa UAFCE'},
+    { nombre: 'Unidad de Licitaciones'},
+    { nombre: 'Bienes Nacionales'},
+    { nombre: 'Primer Nivel de Atención'},
+    { nombre: 'Segundo Nivel de Atención'},
+    { nombre: 'Unidad de Transparencia'},
+    { nombre: 'Subsecretaria de Redes Integradas de Servicio de Salud'},
+    { nombre: 'Unidad de Logistica de Medicamentos e Insumos'},
+    { nombre: 'Dirección General de Vigilancia del Marco Normativo'},
+    { nombre: 'Unidad de Gestión de la Información'},
+    { nombre: 'Unidad de Planeamiento y Evaluacion de la Gestión'},
+  ];
+
+  return Departamento.insertMany(unidades)
+}
