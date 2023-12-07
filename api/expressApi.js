@@ -51,8 +51,7 @@ export function addRestDirections(app) {
   app.post("/api/departamentos", upload.any(), async (request, response) => {
     try {
       const departamento = await crearDepartamento({
-        nombre: request.body.nombre,
-        urlLogo: request.body.urlLogo
+        nombre: request.body.nombre
       });
   
       //La API devuelve como respuesta la noticia completa
@@ -98,11 +97,12 @@ export function addRestDirections(app) {
   // * * *  NOTICIAS  * * *
 
   //GET noticias
-  app.get("/api/noticias/:index?/:idDepartamento?", upload.any(), async (request, response) => {
+  app.post("/api/noticias/get", upload.any(), async (request, response) => {
     try {
-      const index = request.params.index;
-      const idDepartamento = request.params.idDepartamento;
-      const noticias = await getNoticias(index, idDepartamento);
+      const index = request.body.index;
+      const idDepartamento = request.body.idDepartamento;
+      const municipio = request.body.municipio;
+      const noticias = await getNoticias(index, idDepartamento, municipio);
       response.json(noticias);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener las noticias: ' + error });

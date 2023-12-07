@@ -17,8 +17,13 @@ import { getDepartamentoById } from "./departamentos-controller.js";
  * definiendo un limite de entradas por peticion
  * @returns Un arreglo de noticias cumpliendo con los filtros establecidos
  */
-export async function getNoticias(index = 1, idDepartamento = undefined){
-  const queryFilter = idDepartamento ? {departamento: {_id: idDepartamento}} : {};
+export async function getNoticias(index = 1, idDepartamento = undefined, municipio = undefined){
+  let queryFilter = {}
+  
+  if(idDepartamento) queryFilter = {departamento: {_id: idDepartamento}}
+  
+  if(municipio) queryFilter = {...queryFilter, municipio: municipio}
+
   return Noticia.find(queryFilter).sort({ _id: -1 }).skip((index-1)*5).limit(5).populate("departamento").populate("archivos");
 }
 
