@@ -17,7 +17,7 @@ import { getDepartamentoById } from "./departamentos-controller.js";
  * definiendo un limite de entradas por peticion
  * @returns Un arreglo de noticias cumpliendo con los filtros establecidos
  */
-export async function getNoticias(index = 1, idDepartamento = undefined, municipio = undefined){
+export async function getNoticias(index = 1, idDepartamento = null, municipio = null){
   let queryFilter = {}
   
   if(idDepartamento) queryFilter = {departamento: {_id: idDepartamento}}
