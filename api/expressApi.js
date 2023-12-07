@@ -403,6 +403,24 @@ export function addRestDirections(app) {
       response.status(500).json({ error: 'Ocurrió un error al recibir la configuracion del sitio: ' + error });
     }
   })
+
+  //Update Config Footer
+  app.put("/api/config/footer", upload.any(), async (request, response) => {
+    try {
+
+      const config = await updateFooterConfig({
+        footerCorreo: request.body.footerCorreo,
+        footerDireccion: request.body.footerDireccion,
+        footerTelefonos: request.body.footerTelefonos,
+        footerDesc: request.body.footerDesc,
+        footerEnlace: request.body.footerEnlace,
+        footerRedes: request.body.footerRedes,
+      })
+      response.json(config);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al actualizar la configuracion del sitio: ' + error });
+    }
+  })
   
   return app;
 }
