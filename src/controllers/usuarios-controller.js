@@ -119,7 +119,7 @@ function hashPassword(password) {
 
 
 export async function deleteUser(idUsuario){
-  const usuario = await getUserById(idUsuario);
+  const usuario = await Usuario.findById(idUsuario);
   if(!usuario) return throwNotFoundException("Usuario");
 
   return usuario.delete();
