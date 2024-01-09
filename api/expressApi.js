@@ -3,7 +3,7 @@ import { getContactosConfig, getFooterConfig, getGeneralConfig, getValoresConfig
 import { crearDepartamento, eliminarDepartamento, getAllDepartamentos, modificarDepartamento, populateUnidadesSalud } from "../src/controllers/departamentos-controller.js";
 import { sendMail } from "../src/controllers/mail-controller.js";
 import { addNoticia, eliminarNoticia, getCountNoticias, getNoticias, modificarNoticia, queryNoticias } from "../src/controllers/noticias-controller.js";
-import { getUserById, getUsers, login, register, updatePassword } from "../src/controllers/usuarios-controller.js";
+import { createAdmin, deleteUser, getUserById, getUsers, login, register, updatePassword } from "../src/controllers/usuarios-controller.js";
 import multer from "multer";
 
 /**
@@ -348,6 +348,26 @@ export function addRestDirections(app) {
       response.json(user);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al validar la sesion actual: ' + error });
+    }
+  })
+
+  //Delete usuario
+  app.delete("/api/usuarios", upload.any(), async (request, response) => {
+    try {
+      const user = await deleteUser(request.body.idUsuario);
+      response.json(user);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al eliminar usuario: ' + error });
+    }
+  })
+
+  //POST crear admin usuario
+  app.post("/api/admin", upload.any(), async (request, response) => {
+    try {
+      const user = await createAdmin(request.body.name, request.body.username, request.body.password);
+      response.json(user);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al crear usuario: ' + error });
     }
   })
 

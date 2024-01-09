@@ -116,3 +116,30 @@ export async function updatePassword(idUsuario, password){
 function hashPassword(password) {
   return createHash("sha256").update(password).digest("hex");
 }
+
+
+export async function deleteUser(idUsuario){
+  const usuario = await getUserById(idUsuario);
+  if(!usuario) return throwNotFoundException("Usuario");
+
+  return usuario.delete();
+}
+
+
+export async function createAdmin(name, username, password){
+  const user = new Usuario({
+    nombre: name,
+    username: username,
+    passwordHash: hashPassword(password),
+    rol: 'Master',
+    firstLogin: false,
+    ultimaConexion: Date.now()
+  })
+
+  try{
+    return user.save()
+  }
+  catch (error) {
+    return error
+  }
+}
