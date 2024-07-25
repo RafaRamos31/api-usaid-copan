@@ -7,9 +7,10 @@
  * Versión: 1.0.0
  */
 import Noticia from "../models/noticia.js";
-import { throwInvalidIDError, throwNotFoundException } from "../utilities/errorHandler.js";
-import { eliminarArchivo, publicarArchivo } from "./archivos-controller.js";
-import { getDepartamentoById } from "./departamentos-controller.js";
+import { getFilter } from "../utilities/queryConstructor.js";
+import { createArchivosNoticia, deleteArchivosNoticia, privateCrearArchivo, privateDeleteArchivo } from "./archivos-controller.js";
+import { privateGetMunicipioById } from "./municipiosController.js";
+import { privateGetUnidadTecnicaById } from "./unidadTecnicaController.js";
 
 /**
  * Registra la base de dato y obtiene una lista de noticias, 
@@ -17,87 +18,137 @@ import { getDepartamentoById } from "./departamentos-controller.js";
  * definiendo un limite de entradas por peticion
  * @returns Un arreglo de noticias cumpliendo con los filtros establecidos
  */
-export async function getNoticias(index = 1, idDepartamento = null, municipio = null){
-  let queryFilter = {}
-  
-  if(idDepartamento !== null && idDepartamento.length>0) queryFilter = {departamento: {_id: idDepartamento}}
 
-  if(municipio !== null && municipio.length>0) queryFilter = {...queryFilter, municipio: municipio}
+//Get paged
+export const getPagedNoticias = async (req, res) => {
+  try {
+    const { page, pageSize, ut=null, municipio=null, query=null } = req.body;
 
-  return Noticia.find(queryFilter).sort({ _id: -1 }).skip((index-1)*5).limit(5).populate("departamento").populate("archivos");
+    const noticias = (await Noticia.find(getFilter({ut, municipio, query}))
+    .limit(pageSize)
+    .skip(page * pageSize)
+    .populate("unidadTecnica").populate("archivos").populate("municipio"));
+    
+    const count = await Noticia.countDocuments(getFilter({ut, municipio, query}))
+    
+    res.json({ count, noticias });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener las noticias: ' + error });
+  }
 }
 
-export async function queryNoticias(query){
-  const regexQuery = new RegExp(query, 'i');
-  const result = await Noticia.find({
-    contenido: regexQuery
-  }).populate("departamento").populate("archivos")
-  return result;
-}
+//Create
+export const crearNoticia = async (req, res) => {
+  try {
+    const {unidadTecnicaId, municipioId, contenido} = req.body;
+    const files = req.files;
 
+    const unidadTecnica = await privateGetUnidadTecnicaById(unidadTecnicaId)
+    if(!unidadTecnica) return res.status(404).json({ error: 'Error al crear la Noticia. Unidad Técnica no encontrada.' });
 
-export async function getNoticiaById(idNoticia){
-  return Noticia.findById(idNoticia).populate("departamento").populate("archivos").catch((error) => throwInvalidIDError("Noticia", error.message));
-}
+    const municipio = await privateGetMunicipioById(municipioId)
+    if(!municipio) return res.status(404).json({ error: 'Error al crear la Noticia. Municipio no encontrado.' });
 
+    const archivos = await createArchivosNoticia(files);
 
-/**
- * Registra la base de dato y obtiene una lista de noticias, 
- * ordenadas de la mas reciente a la mas antigua y
- * definiendo un limite de entradas por peticion
- * @returns Un arreglo de noticias cumpliendo con los filtros establecidos
- */
-export async function getCountNoticias(idDepartamento){
-  const queryFilter = idDepartamento ? {departamento: {_id: idDepartamento}} : {};
-  return Noticia.countDocuments(queryFilter);
-}
+    const noticia = new Noticia({
+      unidadTecnica,
+      municipio,
+      fechaPublicacion: new Date(),
+      contenido,
+      archivos
+    });
 
-
-/**
- * Crea una nueva noticia con datos ingresados por el usuario, y la guarda en MongoDB
- * @returns 
- */
-export async function addNoticia({deptoId, municipio, contenido, stringArchivos}){
-  //Se obtiene el objeto con la informacion sobre el departamento vinculado a la noticia a crear
-  const departamento = await getDepartamentoById(deptoId);
-  if(!departamento) return throwNotFoundException("Departamento");
-
-  const archivos = JSON.parse(stringArchivos).map(
-    archivo => publicarArchivo(archivo)
-  )
-
-  const noticia = new Noticia({
-    departamento, 
-    municipio,
-    contenido,
-    //Se define el momento actual para la creacion de la noticia
-    fechaPublicacion: Date.now(),
-    //Se guarda el arreglo de archivos adjuntos a la noticia
-    archivos: archivos
-  });
-
-  return noticia.save();
-}
-
-export async function modificarNoticia(idNoticia, departamento, municipio, contenido=null){
-  const noticia = await getNoticiaById(idNoticia);
-  if(!noticia) return throwNotFoundException("Noticia");
-
-  noticia.contenido = contenido;
-  noticia.departamento = departamento;
-  noticia.municipio = municipio;
-
-  return noticia.save();
+    noticia.save();
+    
+    res.json(noticia);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al subir la noticia: ' + error });
+  }
 }
 
 
-export async function eliminarNoticia(idNoticia){
-  const noticia = await getNoticiaById(idNoticia);
-  if(!noticia) return throwNotFoundException("Noticia");
+//Edit
+export const editNoticia = async (req, res) => {
+  try {
+    const {id, unidadTecnicaId, municipioId, contenido} = req.body;
 
-  noticia.archivos.forEach((archivo) => {
-    eliminarArchivo(archivo._id);
-  });
+    const noticia = await Noticia.findById(id)
+    if(!noticia) return res.status(404).json({ error: 'Error al modificar la Noticia. Noticia no encontrada.' });
 
-  return noticia.delete();
+    const unidadTecnica = await privateGetUnidadTecnicaById(unidadTecnicaId)
+    if(!unidadTecnica) return res.status(404).json({ error: 'Error al modificar la Noticia. Unidad Técnica no encontrada.' });
+
+    const municipio = await privateGetMunicipioById(municipioId)
+    if(!municipio) return res.status(404).json({ error: 'Error al modificar la Noticia. Municipio no encontrado.' });
+
+    noticia.unidadTecnica = unidadTecnica;
+    noticia.municipio = municipio;
+    noticia.contenido = contenido;
+
+    noticia.save();
+    
+    res.json(noticia);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al modificar la noticia: ' + error });
+  }
+}
+
+
+//Edit Add Archivo
+export const editAddArchivo = async (req, res) => {
+  try {
+    const { id } = req.body;
+    const file = req.files[0];
+
+    const noticia = await Noticia.findById(id)
+    if(!noticia) return res.status(404).json({ error: 'Error al modificar la Noticia. Noticia no encontrada.' });
+
+    const archivo = await privateCrearArchivo({file, detail: true});
+
+    noticia.archivos = noticia.archivos.concat([archivo._id])
+
+    noticia.save();
+    
+    res.json(archivo);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al modificar la noticia: ' + error });
+  }
+}
+
+
+//Edit Delete Archivo
+export const editDeleteArchivo = async (req, res) => {
+  try {
+    const { id, archivoId } = req.body;
+
+    const noticia = await Noticia.findById(id)
+    if(!noticia) return res.status(404).json({ error: 'Error al modificar la Noticia. Noticia no encontrada.' });
+
+    const archivo = await privateDeleteArchivo(archivoId);
+    
+    res.json(archivo);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al modificar la noticia: ' + error });
+  }
+}
+
+
+//Delete Noticia
+export const deleteNoticia = async (req, res) => {
+  try {
+    const { id, deleteFiles=false } = req.body;
+
+    const noticia = await Noticia.findById(id)
+    if(!noticia) return res.status(404).json({ error: 'Error al eliminar la Noticia. Noticia no encontrada.' });
+
+    if(JSON.parse(deleteFiles)){
+      deleteArchivosNoticia(noticia.archivos)
+    }
+
+    noticia.delete();
+    res.json(noticia);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar la noticia: ' + error });
+  }
 }

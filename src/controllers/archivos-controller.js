@@ -8,105 +8,187 @@
  */
 
 import Archivo from "../models/archivo.js";
-import { throwInvalidIDError, throwNotFoundException } from "../utilities/errorHandler.js";
-import { deleteDriveFile, createEmptyFile, updateChunk } from "./google-controller.js";
-
-export function publicarArchivo({nombre, weight, id}){
-  const archivo = new Archivo({
-    tipo: determinarTipo(nombre),
-    docType: determinarTipoArchivo(nombre),
-    nombre: nombre,
-    tamano: weight,
-    fileId: id,
-    enlace: 'https://drive.google.com/file/d/' + id + '/view',
-    descargar: 'https://drive.google.com/u/0/uc?id=' + id + '&export=download',
-    totalDescargas: 0
-  });
-
-  saveChanges(archivo);
-  return archivo;
-}
-
-async function saveChanges(archivo){
-  archivo.save();
-}
+import { getFilter } from "../utilities/queryConstructor.js";
+import { deleteDriveFile, uploadFile } from "./google-controller.js";
 
 
-export async function crearArchivoChunk(fileName, type){
-  return createEmptyFile(fileName, type);
-}
+//Get paged
+export const getPagedArchivos = async (req, res) => {
+  try {
+    const { page, pageSize, tipo='Documento', queryArchivo=null, ut=null, municipio=null, query=null } = req.body;
 
+    const archivos = (await Archivo.find(getFilter({tipo, queryArchivo, ut, municipio, query}))
+    .limit(pageSize)
+    .skip(page * pageSize));
 
-export async function subirChunks(id, data, start, end, totalSize, actual, totalChunks){
-  const response = await updateChunk(id, data, start, end, totalSize)
-  return({id, loading: actual != totalChunks, range: response,  chunck: `${actual}/${totalChunks}`,})
-}
-
-/**
- * Registra la base de dato y obtiene una lista de noticias, 
- * ordenadas de la mas reciente a la mas antigua y
- * definiendo un limite de entradas por peticion
- * @returns Un arreglo de noticias cumpliendo con los filtros establecidos
- */
-export async function getArchivos(index = 1, type = undefined){
-  const queryFilter = type ? {tipo: type} : {};
-  if(type === 'Documento'){
-    return Archivo.find(queryFilter).skip((index-1)*6).limit(6);
+    const count = await Archivo.countDocuments(getFilter({tipo, queryArchivo, ut, municipio, query}))
+    
+    res.json({ count, archivos });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener los archivos: ' + error });
   }
-  return Archivo.find(queryFilter).skip((index-1)*9).limit(9);
 }
 
-/**
- * Registra la base de dato y obtiene una lista de noticias, 
- * ordenadas de la mas reciente a la mas antigua y
- * definiendo un limite de entradas por peticion
- * @returns Un arreglo de noticias cumpliendo con los filtros establecidos
- */
-export async function getArchivoById(idArchivo){
-  return Archivo.findById(idArchivo).catch((error) => throwInvalidIDError("Archivo", error.message));
+//Create
+export const crearArchivo = async (req, res) => {
+  try {
+    const data = req.files[0];
+
+    //Subir archivo a Google Drive
+    const fileId = await uploadFile(data.originalname, data.mimetype, data.buffer)
+
+    const archivo = new Archivo({
+      tipo: determinarTipo(data.originalname),
+      docType: determinarTipoArchivo(data.originalname),
+      nombre: data.originalname,
+      tamano: data.size,
+      fileId: fileId,
+      enlace: 'https://drive.google.com/file/d/' + fileId + '/view',
+      descargar: 'https://drive.google.com/u/0/uc?id=' + fileId + '&export=download',
+      totalDescargas: 0
+    });
+
+    archivo.save();
+    
+    res.json(archivo);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al subir el archivo: ' + error });
+  }
+}
+
+//Private Create
+export const privateCrearArchivo = async ({file, detail=false}) => {
+  try {
+    //Subir archivo a Google Drive
+    const fileId = await uploadFile(file.originalname, file.mimetype, file.buffer)
+
+    const archivo = new Archivo({
+      tipo: determinarTipo(file.originalname),
+      docType: determinarTipoArchivo(file.originalname),
+      nombre: file.originalname,
+      tamano: file.size,
+      fileId: fileId,
+      enlace: 'https://drive.google.com/file/d/' + fileId + '/view',
+      descargar: 'https://drive.google.com/u/0/uc?id=' + fileId + '&export=download',
+      totalDescargas: 0
+    });
+
+    archivo.save();
+
+    if(detail){
+      return archivo
+    }
+    else{
+      return archivo._id;
+    }
+    
+  } catch (error) {
+    throw error;
+  }
 }
 
 
-export async function getCountArchivos(type = undefined){
-  const queryFilter = type ? {tipo: type} : {};
-  return Archivo.countDocuments(queryFilter);
+//Create archivos noticia
+export const createArchivosNoticia = async (files) => {
+  try {
+
+    const promises = files.map(async (file) => {
+      const id = await privateCrearArchivo({file});
+      return id;
+    });
+  
+    const ids = await Promise.all(promises);
+    return ids;
+
+  } catch (error) {
+    throw error;
+  }
 }
 
 
-export async function queryArchivos(query){
-  const regexQuery = new RegExp(query, 'i');
-  const result = await Archivo.find({
-    nombre: regexQuery
-  })
-  return result;
+//Sumar descarga
+export const sumarDescarga = async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const archivo = await Archivo.findById(id)
+    if(!archivo) return res.status(404).json({ error: 'Error al editar el Archivo. Archivo no encontrado.' });
+
+    archivo.totalDescargas = archivo.totalDescargas + 1;
+    archivo.save();
+    
+    res.json(archivo);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al modificar el archivo: ' + error });
+  }
 }
 
+//Edit
+export const modificarArchivo = async (req, res) => {
+  try {
+    const { id, nombre } = req.body;
 
-export async function sumarDescarga(idArchivo){
-  const archivo = await getArchivoById(idArchivo);
-  if(!archivo) return throwNotFoundException("Archivo");
+    const archivo = await Archivo.findById(id)
+    if(!archivo) return res.status(404).json({ error: 'Error al editar el Archivo. Archivo no encontrado.' });
 
-  archivo.totalDescargas = archivo.totalDescargas + 1;
-  return archivo.save();
+    archivo.nombre = nombre;
+    archivo.save();
+    
+    res.json(archivo);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al modificar el archivo: ' + error });
+  }
 }
 
+//Delete
+export const eliminarArchivo = async (req, res) => {
+  try {
+    const { id } = req.body;
 
-export async function modificarArchivo(idArchivo, nombre){
-  const archivo = await getArchivoById(idArchivo);
-  if(!archivo) return throwNotFoundException("Archivo");
+    const archivo = await Archivo.findById(id)
+    if(!archivo) return res.status(404).json({ error: 'Error al eliminar el Archivo. Archivo no encontrado.' });
+    
+    deleteDriveFile(archivo.fileId);
+    archivo.delete();
 
-  archivo.nombre = nombre;
-  return archivo.save();
+    res.json(archivo);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar el archivo: ' + error });
+  }
 }
 
+//Private Delete
+export const privateDeleteArchivo = async (id) => {
+  try {
+    const archivo = await Archivo.findById(id)
+    if(!archivo) return null
+    
+    deleteDriveFile(archivo.fileId);
+    archivo.delete();
 
-export async function eliminarArchivo(idArchivo){
-  const archivo = await getArchivoById(idArchivo);
-  if(!archivo) return throwNotFoundException("Archivo");
-
-  deleteDriveFile(archivo.fileId);
-  return archivo.delete();
+    return archivo;
+  } catch (error) {
+    throw error
+  }
 }
+
+//Delete all archivos noticia
+export const deleteArchivosNoticia = async (filesList) => {
+  try {
+
+    const promises = filesList.map(async (file) => {
+      const archivo = await privateDeleteArchivo(file);
+      return archivo;
+    });
+  
+    const archivos = await Promise.all(promises);
+    return archivos;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
 
 /**
  * Obtiene el tipo de un archivo enviado en base a su extension de nombre
@@ -135,7 +217,7 @@ export function determinarTipo(nombreArchivo){
   }
 
   if(extensionesVideo.includes(extension)) {
-    return 'Video';
+    return 'Imagen';
   }
 
   //Si se envia un archivo no vacio, pero que no tiene ningun de las extensiones permitidas
@@ -173,8 +255,4 @@ export function determinarTipoArchivo(nombreArchivo){
 
   //Si se envia un archivo no vacio, pero que no tiene ningun de las extensiones permitidas
   return null;
-}
-
-export const getOficios = (year) => {
-  return Archivo.find({categoria: 'Oficio'})
 }

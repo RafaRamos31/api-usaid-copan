@@ -1,19 +1,19 @@
 import mongoose from "mongoose";
 
 const schema = new mongoose.Schema({
-  departamento: {
+  unidadTecnica: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Departamento",
+    ref: "UnidadTecnica",
     required: true,
   },
   municipio: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Municipio",
     required: true,
   },
   fechaPublicacion: {
-    type: String,
+    type: Date,
     required: true,
-    minlength: 5,
   },
   contenido: {
     type: String,

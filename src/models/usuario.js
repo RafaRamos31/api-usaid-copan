@@ -23,7 +23,7 @@ const schema = new mongoose.Schema({
     required: true
   },
   ultimaConexion: {
-    type: String
+    type: Date
   }
 });
 

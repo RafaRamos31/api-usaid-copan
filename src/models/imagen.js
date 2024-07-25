@@ -5,21 +5,15 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  tamano: {
-    type: Number,
-    required: true
-  },
   fileId: {
     type: String,
-    required: true
   },
   enlace: {
     type: String,
-    required: true
   }
 });
 
 /**
- * Modelo de entidad de un Archivo
+ * Modelo de entidad de una Imagen de Home
  */
-export default mongoose.model("ConfArchivo", schema, "ConfArchivos");
+export default mongoose.model("Imagen", schema, "Imagenes");

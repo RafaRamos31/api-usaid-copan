@@ -5,33 +5,36 @@
  * Fecha: Junio 2023
  * Versión: 1.0.0
  */
+import dotenv from 'dotenv';
+dotenv.config();
 
 import { google } from "googleapis";
 import stream from "stream";
-import path from "path";
-import { fileURLToPath } from 'url';
-
-//Procedimiento para el correcto enrutamiento a un documento ubicado en la raiz del proyecto
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-//Se define la ruta al archivo con las credenciales de acceso como servicio de Google Drive
-const KEYFILENAME = path.join(__dirname, '../../credentials.json');
 
 //Se define el alcance del permiso de operacion, en este caso acceso total en Drive
 const SCOPES = ["https://www.googleapis.com/auth/drive"];
 
+//Se decodifican los datos de la cuenta de servicio
+const base64EncodedServiceAccount = process.env.BASE64_ENCODED_SERVICE_ACCOUNT;
+const decodedServiceAccount = Buffer.from(base64EncodedServiceAccount, 'base64').toString('utf-8');
+const credentials = JSON.parse(decodedServiceAccount);
+
 //Se  crea el objeto de credenciales
 const auth = new google.auth.GoogleAuth({
-  keyFilename: KEYFILENAME,
+  credentials,
   scopes: SCOPES,
 });
 
-export const createEmptyFile = async (name, type) => {
+//Upload
+export const uploadFile = async (name, type, buffer) => {
   //Se crea el archivo usando las credenciales de Google Drive y el stream de bytes que componen el archivo.
+  const bufferStream = new stream.PassThrough();
+  bufferStream.end(buffer);
+
   const { data } = await google.drive({ version: "v3", auth }).files.create({
     media: {
       mimeType: type,
+      body: bufferStream
     },
     resumable: true,
     requestBody: {
@@ -41,38 +44,20 @@ export const createEmptyFile = async (name, type) => {
       parents: [process.env.GOOGLE_FOLDER_ID],
     },
     fields: "id,name",
-  },);
+  });
+
   
   //Genera una URL valida en base al ID generado por el archivo guardado
   return data.id;
 };
 
-export const updateChunk = async (fileId, chunk, start, end, fileSize) => {
-  //Genera un stream de datos para el procesamiento de los Bytes del archivo
-  const bufferStream = new stream.PassThrough();
-  bufferStream.end(chunk.buffer);
 
-  const range = `bytes ${start}-${end - 1}`;
-  
-  //Se crea el archivo usando las credenciales de Google Drive y el stream de bytes que componen el archivo.
-  await google.drive({ version: "v3", auth }).files.update({
-    fileId,
-    media: {
-      body: bufferStream
-    },
-    requestBody: {
-      // Establece el rango de bytes del fragmento
-      range
-    },
-  });
-  return `Uploaded range: ${range}`;
-};
-
+//Delete
 export const deleteDriveFile = async (driveId) => {
   try {
     const result = await google.drive({ version: "v3", auth }).files.delete({fileId: driveId})
     return result;
   } catch (error) {
-    console.error('Error al eliminar el archivo:', error);
+    throw error;
   }
 };
