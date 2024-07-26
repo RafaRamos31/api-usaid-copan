@@ -16,6 +16,9 @@ import "../src/config/db.js";
 //Se inicializa un servidor Express para la navegacion entre rutas al acceder a la API
 const app = express();
 
+// Habilitar CORS
+app.use(cors());
+
 // Rutas
 setRoutes(app)
 
