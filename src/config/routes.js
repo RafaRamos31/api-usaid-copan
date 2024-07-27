@@ -6,6 +6,7 @@ import imagesRouter from "../routes/imagesRouter.js";
 import mailRouter from "../routes/mailRouter.js";
 import municipiosRouter from "../routes/municipiosRoutes.js";
 import noticiasRouter from "../routes/noticiasRouter.js";
+import redianRouter from "../routes/redianRouter.js";
 import unidadesTecnicasRouter from "../routes/unidadesTecnicasRouter.js";
 import usuariosRouter from "../routes/usuariosRouter.js";
 import valoresRouter from "../routes/valoresRouter.js";
@@ -23,6 +24,7 @@ export const setRoutes = (app) => {
   app.use('/api/home', homeInfoRouter);
   app.use('/api/footer', footerInfoRouter);
   app.use('/api/valores', valoresRouter);
+  app.use('/api/redian', redianRouter);
   
   return app
 }

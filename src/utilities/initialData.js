@@ -155,3 +155,36 @@ export const getInitialHomeInfo = () => ([
   { nombre: 'Organigrama', fileId: null, enlace: null},
   { nombre: 'Valores', fileId: null, enlace: null}
 ])
+
+export const getInitialRedianBoards = () => ([
+  { 
+    nombre: 'GDSS. ADASBA, Santa Bárbara', 
+    enlace: 'https://public.tableau.com/views/TableroAINC-ADASBA_17109748214510/Tablero?:language=es-ES&publish=yes&:sid=&:display_count=n&:origin=viz_share_link', 
+    ref: 1
+  },
+  { 
+    nombre: 'GDSS. Municipalidad de Macuelizo, Santa Bárbara', 
+    enlace: 'https://public.tableau.com/views/IndicadoresAINC-Macuelizo__16783726937320/DASH-Macuelizo?:language=es-ES&:sid=&:display_count=n&:origin=viz_share_link', 
+    ref: 1
+  },
+  { 
+    nombre: 'GDSS. El Jaral, Santa Rita, Copán', 
+    enlace: 'https://public.tableau.com/views/TableroAINC-ADASBA_17109748214510/Tablero?:language=es-ES&publish=yes&:sid=&:display_count=n&:origin=viz_share_link', 
+    ref: 2
+  },
+  { 
+    nombre: 'GDSS. Municipalidad de Gracias, Lempira', 
+    enlace: 'https://public.tableau.com/views/TableroAINC-Gracias_16941102002800/Tablero?:language=es-ES&:sid=&:display_count=n&:origin=viz_share_link', 
+    ref: 3
+  },
+  { 
+    nombre: 'GDSS. Municipalidad de Lepaera, Lempira', 
+    enlace: 'https://public.tableau.com/views/TableroAINC-Lepaera_17181507162960/DASH-Frecuencia?:language=es-ES&:sid=&:display_count=n&:origin=viz_share_link', 
+    ref: 3
+  },
+  { 
+    nombre: 'GDSS. Municipalidad de Belén Gualcho, Ocotepeque', 
+    enlace: 'https://public.tableau.com/views/TableroAINC-BelenGualcho1/T-Analisis?:language=es-ES&:sid=&:display_count=n&:origin=viz_share_link', 
+    ref: 4
+  },
+])
