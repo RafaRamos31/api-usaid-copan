@@ -20,7 +20,7 @@ export const getContactosList = async (req, res) => {
       {
         $group: {
           _id: '$municipio',
-          contactos: { $push: { _id: '$_id', establecimiento: '$establecimiento', telefono: '$telefono', municipio: '$municipio', } }
+          contactos: { $push: { _id: '$_id', establecimiento: '$establecimiento', telefono: '$telefono', correo: '$correo', municipio: '$municipio', } }
         }
       },
     ]);
@@ -32,7 +32,7 @@ export const getContactosList = async (req, res) => {
 
 //Create
 export const createContacto = async (req, res) => {
-  const { municipioId, establecimiento, telefono } = req.body;
+  const { municipioId, establecimiento, telefono, correo } = req.body;
   try {
     const municipio = await privateGetMunicipioById(municipioId)
     if(!municipio) return res.status(404).json({ error: 'Error al crear el Contacto. Contacto no encontrado.' });
@@ -41,6 +41,7 @@ export const createContacto = async (req, res) => {
       establecimiento,
       telefono,
       municipio,
+      correo,
       departamentoRef: process.env.WEB_DEPTO,
       sectorRef: process.env.WEB_SECTOR
     });
@@ -56,7 +57,7 @@ export const createContacto = async (req, res) => {
 
 //Edit
 export const editContacto = async (req, res) => {
-  const { id, municipioId, establecimiento, telefono } = req.body;
+  const { id, municipioId, establecimiento, telefono, correo } = req.body;
   try {
     const contacto = await Contacto.findById(id)
     if(!contacto) return res.status(404).json({ error: 'Error al editar el Contacto. Contacto no encontrado.' });
@@ -64,6 +65,7 @@ export const editContacto = async (req, res) => {
     contacto.municipio = municipioId;
     contacto.establecimiento = establecimiento;
     contacto.telefono = telefono;
+    contacto.correo = correo;
 
     contacto.save();
 

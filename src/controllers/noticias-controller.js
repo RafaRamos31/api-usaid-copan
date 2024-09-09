@@ -7,10 +7,12 @@
  * Versión: 1.0.0
  */
 import Noticia from "../models/noticia.js";
+import { decodeToken } from "../utilities/jwtDecoder.js";
 import { getFilter } from "../utilities/queryConstructor.js";
 import { createArchivosNoticia, deleteArchivosNoticia, privateCrearArchivo, privateDeleteArchivo } from "./archivos-controller.js";
 import { privateGetMunicipioById } from "./municipiosController.js";
 import { privateGetUnidadTecnicaById } from "./unidadTecnicaController.js";
+import { getUsuarioById } from "./usuarios-controller.js";
 
 /**
  * Registra la base de dato y obtiene una lista de noticias, 
@@ -27,7 +29,7 @@ export const getPagedNoticias = async (req, res) => {
     const noticias = (await Noticia.find(getFilter({ut, municipio, query}))
     .limit(pageSize)
     .skip(page * pageSize)
-    .populate("unidadTecnica").populate("archivos").populate("municipio"));
+    .populate("unidadTecnica").populate("archivos").populate("municipio").populate('autor', '_id nombre'));
     
     const count = await Noticia.countDocuments(getFilter({ut, municipio, query}))
     
@@ -40,6 +42,13 @@ export const getPagedNoticias = async (req, res) => {
 //Create
 export const crearNoticia = async (req, res) => {
   try {
+    const authorizationHeader = req.headers['authorization'];
+
+    const auth = decodeToken(authorizationHeader);
+    if(auth.code !== 200) return res.status(auth.code).json({ error: 'Ocurrió un error al subir noticia: ' + auth.payload });
+
+    const autor = await getUsuarioById(auth.payload.id);
+
     const {unidadTecnicaId, municipioId, contenido} = req.body;
     const files = req.files;
 
@@ -55,6 +64,7 @@ export const crearNoticia = async (req, res) => {
       unidadTecnica,
       municipio,
       fechaPublicacion: new Date(),
+      autor: autor,
       contenido,
       archivos
     });

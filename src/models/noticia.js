@@ -18,6 +18,11 @@ const schema = new mongoose.Schema({
   contenido: {
     type: String,
   },
+  autor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+    required: true,
+  },
   archivos:[{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Archivo"

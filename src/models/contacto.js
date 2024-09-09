@@ -14,6 +14,9 @@ const schema = new mongoose.Schema({
     type: String,
     required: true
   },
+  correo: {
+    type: String
+  },
   sectorRef: {
     type: Number,
     required: true

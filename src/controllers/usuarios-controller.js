@@ -12,6 +12,19 @@ import { generarCodigoAleatorio } from "../utilities/codeGenerator.js";
 import { decodeToken, signToken } from "../utilities/jwtDecoder.js";
 import { createHash } from 'crypto';
 
+//Verify
+export const getUsuarioById = async (id) => {
+  try {
+    const usuario = await Usuario.findById(id)
+    if(!usuario) throw new Error('Usuario no encontrado')
+    
+    return usuario
+
+  } catch (error) {
+    return error
+  }
+}
+
 //Login
 export const loginUser = async (req, res) => {
   try {
