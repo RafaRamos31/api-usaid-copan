@@ -11,7 +11,7 @@ export const getFooterInfo = async (req, res) => {
 
 export const editFooterInfo = async (req, res) => {
   try {
-    const { direccion, correo, telefono, facebook, instagram, youtube, twitter } = req.body;
+    const { direccion, correo, telefono, facebook, instagram, youtube, twitter, tiktok } = req.body;
 
     const footerInfo = await getFooterInfoFile();
 
@@ -22,6 +22,7 @@ export const editFooterInfo = async (req, res) => {
     footerInfo.instagram = instagram;
     footerInfo.youtube = youtube;
     footerInfo.twitter = twitter;
+    footerInfo.tiktok = tiktok;
 
     footerInfo.save();
     res.json(footerInfo);
@@ -35,13 +36,15 @@ const getFooterInfoFile = async () => {
     if(!footerInfo){
       footerInfo = new FooterInfo({
         ref: 1,
-        direccion: null,
-        correo: null,
-        telefono: null,
-        facebook: null,
-        instagram: null,
-        youtube: null,
-        twitter: null,
+        direccion: '',
+        correo: '',
+        telefono: '',
+        facebook: '',
+        instagram: '',
+        youtube: '',
+        twitter: '',
+        twitter: '',
+        tiktok: '',
       })
       footerInfo.save();
     }

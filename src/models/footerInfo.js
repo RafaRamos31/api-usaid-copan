@@ -26,6 +26,9 @@ const schema = new mongoose.Schema({
   twitter: {
     type: String,
   },
+  tiktok: {
+    type: String,
+  },
 });
 
 export default mongoose.model("FooterInfo", schema, "FooterInfo");
