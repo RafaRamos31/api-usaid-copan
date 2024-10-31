@@ -27,6 +27,7 @@ export const getPagedNoticias = async (req, res) => {
     const { page, pageSize, ut=null, municipio=null, query=null } = req.body;
 
     const noticias = (await Noticia.find(getFilter({ut, municipio, query}))
+    .sort({fechaPublicacion: -1})
     .limit(pageSize)
     .skip(page * pageSize)
     .populate("unidadTecnica").populate("archivos").populate("municipio").populate('autor', '_id nombre'));
